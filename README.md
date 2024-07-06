@@ -1,2 +1,2 @@
-# k-conf
+# kconf
 Kong CLI configuration utility
