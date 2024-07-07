@@ -6,8 +6,6 @@
 
 package main
 
-import "net/http"
-
 // kong service attributes
 type KongService struct {
 	name    string
@@ -37,5 +35,6 @@ func (ks *KongServer) AddService(newKongService KongService) {
 
 	var kongUrl string = ks.address
 
-	http.Post(kongUrl, "text/json")
+	_ = kongUrl
+	// http.Post(kongUrl, "text/json")
 }

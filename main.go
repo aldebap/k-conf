@@ -9,6 +9,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"os"
 )
 
 const (
@@ -42,7 +43,20 @@ func main() {
 
 	flag.Parse()
 
-	myKongServer := NewKongServer(kongAddress, kongPort)
+	err := kconf(NewKongServer(kongAddress, kongPort), flag.Args())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "[error] fail attempting to connect to Kong server: %s", err.Error())
+		os.Exit(-1)
+	}
+}
 
-	myKongServer.AddService()
+// kconf utility
+func kconf(myKongServer *KongServer, command []string) error {
+
+	//	command to get Kong status
+	if len(command) == 1 && command[0] == "status" {
+		return myKongServer.CheckStatus()
+	}
+
+	return nil
 }

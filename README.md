@@ -1,2 +1,3 @@
 # kconf
-Kong CLI configuration utility
+
+Kong Gateway CLI configuration utility
