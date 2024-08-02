@@ -20,10 +20,17 @@ const (
 func main() {
 	var (
 		version bool
+
+		//	Kong server configuration
+		kongAddress string
+		kongPort    int
 	)
 
 	//	CLI arguments
 	flag.BoolVar(&version, "version", false, "show kconf version")
+
+	flag.StringVar(&kongAddress, "kong-address", "localhost", "Kong configuration address")
+	flag.IntVar(&kongPort, "port", 8001, "Kong configuration port")
 
 	flag.Parse()
 
@@ -33,19 +40,16 @@ func main() {
 		return
 	}
 
-	//	Kong server configuration
-	var kongAddress string
-	var kongPort int
+	//	connect and send command
+	kongServer := NewKongServer(kongAddress, kongPort)
+	if kongServer == nil {
+		fmt.Fprintf(os.Stderr, "[error] fail attempting to alocate Kong server\n")
+		os.Exit(-1)
+	}
 
-	//	CLI arguments
-	flag.StringVar(&kongAddress, "kong-address", "localhost", "Kong configuration address")
-	flag.IntVar(&kongPort, "port", 8001, "Kong configuration port")
-
-	flag.Parse()
-
-	err := kconf(NewKongServer(kongAddress, kongPort), flag.Args())
+	err := kconf(kongServer, flag.Args())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "[error] fail attempting to connect to Kong server: %s", err.Error())
+		fmt.Fprintf(os.Stderr, "[error] fail attempting to send command to Kong server: %s\n", err.Error())
 		os.Exit(-1)
 	}
 }
