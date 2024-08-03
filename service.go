@@ -8,6 +8,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -39,27 +40,35 @@ func NewKongService(name string, url string, enabled bool) *KongService {
 // add a new service to Kong
 func (ks *KongServer) AddService(newKongService *KongService) error {
 
-	fmt.Printf("[debug]: name = %s; URL = %s", newKongService.name, newKongService.url)
-	//var kongUrl string = ks.address
-
-	//_ = kongUrl
-	// http.Post(kongUrl, "text/json")
+	fmt.Printf("[debug]: name = %s; URL = %s\n", newKongService.name, newKongService.url)
+	payload, err := json.Marshal(KongServiceRequest{
+		Name:    newKongService.name,
+		Url:     newKongService.url,
+		Enabled: newKongService.enabled,
+	})
+	if err != nil {
+		return err
+	}
+	fmt.Printf("[debug]: payload = %s\n", payload)
 
 	var kongUrl string = ks.address
 
 	if ks.port != 0 {
-		kongUrl = fmt.Sprintf("http://%s:%d", ks.address, ks.port)
+		kongUrl = fmt.Sprintf("http://%s:%d/services", ks.address, ks.port)
 	}
 
 	//	json.NewEncoder(httpResponse).Encode(produtoResp)
 
-	request, error := http.NewRequest("POST", kongUrl, bytes.NewBuffer([]byte("{}")))
+	request, err := http.NewRequest("POST", kongUrl, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
 	request.Header.Set("Content-Type", "application/json; charset=UTF-8")
 
 	client := &http.Client{}
-	response, error := client.Do(request)
-	if error != nil {
-		panic(error)
+	response, err := client.Do(request)
+	if err != nil {
+		return err
 	}
 	defer response.Body.Close()
 
