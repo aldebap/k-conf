@@ -7,9 +7,11 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"fmt"
 	"os"
+	"regexp"
 )
 
 const (
@@ -57,9 +59,46 @@ func main() {
 // kconf utility
 func kconf(myKongServer *KongServer, command []string) error {
 
+	//	compile all regex required to extract parameters for commands
+	nameRegEx, err := regexp.Compile(`^--name\s*=\s*(\S+)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	urlRegEx, err := regexp.Compile(`^--url\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	//	command to get Kong status
 	if len(command) == 1 && command[0] == "status" {
 		return myKongServer.CheckStatus()
+	}
+
+	//	command add
+	if len(command) >= 1 && command[0] == "add" {
+		if len(command) >= 2 && command[1] == "service" {
+			var name string
+			var url string
+			var enabled bool = true
+
+			for i := 2; i < len(command); i++ {
+				match := nameRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					name = match[0][1]
+				}
+
+				match = urlRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					url = match[0][1]
+				}
+			}
+			newService := NewKongService(name, url, enabled)
+
+			return myKongServer.AddService(newService)
+		}
+
+		return errors.New("missing entity for command add")
 	}
 
 	return nil
