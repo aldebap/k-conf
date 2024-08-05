@@ -7,7 +7,9 @@
 package main
 
 import (
+	"errors"
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -26,22 +28,43 @@ func NewKongServer(address string, port int) *KongServer {
 	}
 }
 
-// check Kong status
-func (ks *KongServer) CheckStatus() error {
-
+func (ks *KongServer) ServerURL() string {
 	var kongUrl string = ks.address
 
 	if ks.port != 0 {
 		kongUrl = fmt.Sprintf("http://%s:%d", ks.address, ks.port)
 	}
 
+	return kongUrl
+}
+
+// check Kong status
+func (ks *KongServer) CheckStatus(jsonOutput bool) error {
+
+	var serviceURL string = ks.ServerURL()
+
 	//	send a request to Kong to check it's status
-	resp, err := http.Get(kongUrl)
+	resp, err := http.Get(serviceURL)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("%s\n", resp.Status)
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("error sending check status command to Kong: " + resp.Status)
+	}
+
+	if jsonOutput {
+		var respPayload []byte
+
+		respPayload, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		fmt.Printf("%s\n", resp.Status)
+	}
 
 	return nil
 }

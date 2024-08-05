@@ -26,6 +26,8 @@ func main() {
 		//	Kong server configuration
 		kongAddress string
 		kongPort    int
+
+		jsonOutput bool
 	)
 
 	//	CLI arguments
@@ -33,6 +35,7 @@ func main() {
 
 	flag.StringVar(&kongAddress, "kong-address", "localhost", "Kong configuration address")
 	flag.IntVar(&kongPort, "port", 8001, "Kong configuration port")
+	flag.BoolVar(&jsonOutput, "json-output", false, "use json output for every command")
 
 	flag.Parse()
 
@@ -49,7 +52,7 @@ func main() {
 		os.Exit(-1)
 	}
 
-	err := kconf(kongServer, flag.Args())
+	err := kconf(kongServer, flag.Args(), jsonOutput)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "[error] fail attempting to send command to Kong server: %s\n", err.Error())
 		os.Exit(-1)
@@ -57,7 +60,7 @@ func main() {
 }
 
 // kconf utility
-func kconf(myKongServer *KongServer, command []string) error {
+func kconf(myKongServer *KongServer, command []string, jsonOutput bool) error {
 
 	//	compile all regex required to extract parameters for commands
 	nameRegEx, err := regexp.Compile(`^--name\s*=\s*(\S+)\s*$`)
@@ -72,7 +75,7 @@ func kconf(myKongServer *KongServer, command []string) error {
 
 	//	command to get Kong status
 	if len(command) == 1 && command[0] == "status" {
-		return myKongServer.CheckStatus()
+		return myKongServer.CheckStatus(jsonOutput)
 	}
 
 	//	command add
@@ -95,7 +98,7 @@ func kconf(myKongServer *KongServer, command []string) error {
 			}
 			newService := NewKongService(name, url, enabled)
 
-			return myKongServer.AddService(newService)
+			return myKongServer.AddService(newService, jsonOutput)
 		}
 
 		return errors.New("missing entity for command add")
