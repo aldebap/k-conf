@@ -46,6 +46,7 @@ type KongServiceResponse struct {
 	Protocol           string `json:"protocol"`
 	Port               int    `json:"port"`
 	Host               string `json:"host"`
+	Path               string `json:"path"`
 	CACertificates     string `json:"ca_certificates"`
 	ClientCertificates string `json:"client_certificates"`
 	Tags               string `json:"tags"`
@@ -101,6 +102,49 @@ func (ks *KongServer) AddService(newKongService *KongService, jsonOutput bool) e
 		}
 
 		fmt.Printf("%s\nnew service ID: %s\n", resp.Status, serviceResp.Id)
+	}
+
+	return nil
+}
+
+// query a service by Id
+func (ks *KongServer) QueryService(id string, jsonOutput bool) error {
+
+	var serviceURL string = fmt.Sprintf("%s/services/%s", ks.ServerURL(), id)
+
+	//	send a request to Kong to query the service by id
+	resp, err := http.Get(serviceURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("service not found for the id: " + id)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("error sending query service command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var serviceResp KongServiceResponse
+
+		err = json.Unmarshal(respPayload, &serviceResp)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("%s\nservice: %s --> %s://%s:%d%s\n", resp.Status,
+			serviceResp.Name, serviceResp.Protocol, serviceResp.Host, serviceResp.Port, serviceResp.Path)
 	}
 
 	return nil

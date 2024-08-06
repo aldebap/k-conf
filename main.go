@@ -73,6 +73,11 @@ func kconf(myKongServer *KongServer, command []string, jsonOutput bool) error {
 		return err
 	}
 
+	idRegEx, err := regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	//	command to get Kong status
 	if len(command) == 1 && command[0] == "status" {
 		return myKongServer.CheckStatus(jsonOutput)
@@ -99,6 +104,28 @@ func kconf(myKongServer *KongServer, command []string, jsonOutput bool) error {
 			newService := NewKongService(name, url, enabled)
 
 			return myKongServer.AddService(newService, jsonOutput)
+		}
+
+		return errors.New("missing entity for command add")
+	}
+
+	//	command query
+	if len(command) >= 1 && command[0] == "query" {
+		if len(command) >= 2 && command[1] == "service" {
+			var id string
+
+			for i := 2; i < len(command); i++ {
+				match := idRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					id = match[0][1]
+				}
+			}
+
+			if len(id) == 0 {
+				return errors.New("missing service id: option --id={id} required for this command")
+			}
+
+			return myKongServer.QueryService(id, jsonOutput)
 		}
 
 		return errors.New("missing entity for command add")
