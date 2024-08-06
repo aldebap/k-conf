@@ -53,6 +53,12 @@ type KongServiceResponse struct {
 	Enabled            bool   `json:"enabled"`
 }
 
+// kong service list response payload
+type KongServiceListResponse struct {
+	Data []KongServiceResponse `json:"data"`
+	Next string                `json:"next"`
+}
+
 // add a new service to Kong
 func (ks *KongServer) AddService(newKongService *KongService, jsonOutput bool) error {
 
@@ -145,6 +151,54 @@ func (ks *KongServer) QueryService(id string, jsonOutput bool) error {
 
 		fmt.Printf("%s\nservice: %s --> %s://%s:%d%s\n", resp.Status,
 			serviceResp.Name, serviceResp.Protocol, serviceResp.Host, serviceResp.Port, serviceResp.Path)
+	}
+
+	return nil
+}
+
+// list all services
+func (ks *KongServer) ListServices(jsonOutput bool) error {
+
+	var serviceURL string = fmt.Sprintf("%s/services/", ks.ServerURL())
+
+	//	send a request to Kong to get a list of all services
+	resp, err := http.Get(serviceURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("error sending list services command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var serviceListResp KongServiceListResponse
+
+		err = json.Unmarshal(respPayload, &serviceListResp)
+		if err != nil {
+			return err
+		}
+
+		if len(serviceListResp.Data) == 0 {
+			fmt.Printf("%s\nNo services\n", resp.Status)
+
+			return nil
+		}
+
+		fmt.Printf("%s\nservice list\n", resp.Status)
+		for _, service := range serviceListResp.Data {
+			fmt.Printf("%s: %s --> %s://%s:%d%s\n", service.Id, service.Name,
+				service.Protocol, service.Host, service.Port, service.Path)
+		}
 	}
 
 	return nil

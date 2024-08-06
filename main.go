@@ -131,5 +131,14 @@ func kconf(myKongServer *KongServer, command []string, jsonOutput bool) error {
 		return errors.New("missing entity for command add")
 	}
 
+	//	command list
+	if len(command) >= 1 && command[0] == "list" {
+		if len(command) >= 2 && command[1] == "service" {
+			return myKongServer.ListServices(jsonOutput)
+		}
+
+		return errors.New("missing entity for command add")
+	}
+
 	return nil
 }
