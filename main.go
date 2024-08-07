@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 )
 
 const (
@@ -73,6 +74,26 @@ func kconf(myKongServer *KongServer, command []string, jsonOutput bool) error {
 		return err
 	}
 
+	protocolsRegEx, err := regexp.Compile(`^--protocols\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	methodsRegEx, err := regexp.Compile(`^--methods\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	pathsRegEx, err := regexp.Compile(`^--paths\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	serviceIdRegEx, err := regexp.Compile(`^--service-id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	idRegEx, err := regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
 	if err != nil {
 		return err
@@ -104,6 +125,45 @@ func kconf(myKongServer *KongServer, command []string, jsonOutput bool) error {
 			newService := NewKongService(name, url, enabled)
 
 			return myKongServer.AddService(newService, jsonOutput)
+		}
+
+		if len(command) >= 2 && command[1] == "route" {
+			const valuesDelim = ","
+			var name string
+			var protocols []string
+			var methods []string
+			var paths []string
+			var serviceId string
+
+			for i := 2; i < len(command); i++ {
+				match := nameRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					name = match[0][1]
+				}
+
+				match = protocolsRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					protocols = strings.Split(match[0][1], valuesDelim)
+				}
+
+				match = methodsRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					methods = strings.Split(match[0][1], valuesDelim)
+				}
+
+				match = pathsRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					paths = strings.Split(match[0][1], valuesDelim)
+				}
+
+				match = serviceIdRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					serviceId = match[0][1]
+				}
+			}
+			newKongRoute := NewKongRoute(name, protocols, methods, paths, serviceId)
+
+			return myKongServer.AddRoute(newKongRoute, jsonOutput)
 		}
 
 		return errors.New("missing entity for command add")
