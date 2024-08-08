@@ -51,11 +51,12 @@ type KongRouteRequest struct {
 
 // kong route response payload
 type KongRouteResponse struct {
-	Id       string `json:"id"`
-	Name     string `json:"name"`
-	Protocol string `json:"protocol"`
-	Host     string `json:"host"`
-	Path     string `json:"path"`
+	Id        string    `json:"id"`
+	Name      string    `json:"name"`
+	Protocols []string  `json:"protocols"`
+	Methods   []string  `json:"methods"`
+	Paths     []string  `json:"paths"`
+	Service   serviceId `json:"service"`
 }
 
 // kong route list response payload
@@ -117,6 +118,49 @@ func (ks *KongServer) AddRoute(newKongRoute *KongRoute, jsonOutput bool) error {
 		}
 
 		fmt.Printf("%s\nnew route ID: %s\n", resp.Status, routeResp.Id)
+	}
+
+	return nil
+}
+
+// query a route by Id
+func (ks *KongServer) QueryRoute(id string, jsonOutput bool) error {
+
+	var serviceURL string = fmt.Sprintf("%s/routes/%s", ks.ServerURL(), id)
+
+	//	send a request to Kong to query the route by id
+	resp, err := http.Get(serviceURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("route not found for the id: " + id)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("error sending query route command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var routeResp KongRouteResponse
+
+		err = json.Unmarshal(respPayload, &routeResp)
+		if err != nil {
+			return err
+		}
+
+		fmt.Printf("%s\nroute: %s - %s %s:%s --> Service Id: %s\n", resp.Status,
+			routeResp.Name, routeResp.Methods, routeResp.Protocols, routeResp.Paths, routeResp.Service.Id)
 	}
 
 	return nil

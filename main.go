@@ -188,6 +188,23 @@ func kconf(myKongServer *KongServer, command []string, jsonOutput bool) error {
 			return myKongServer.QueryService(id, jsonOutput)
 		}
 
+		if len(command) >= 2 && command[1] == "route" {
+			var id string
+
+			for i := 2; i < len(command); i++ {
+				match := idRegEx.FindAllStringSubmatch(command[i], -1)
+				if len(match) == 1 {
+					id = match[0][1]
+				}
+			}
+
+			if len(id) == 0 {
+				return errors.New("missing route id: option --id={id} required for this command")
+			}
+
+			return myKongServer.QueryRoute(id, jsonOutput)
+		}
+
 		return errors.New("missing entity for command add")
 	}
 
