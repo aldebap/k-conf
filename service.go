@@ -59,10 +59,14 @@ type KongServiceListResponse struct {
 	Next string                `json:"next"`
 }
 
+const (
+	servicesResource string = "services"
+)
+
 // add a new service to Kong
 func (ks *KongServer) AddService(newKongService *KongService, jsonOutput bool) error {
 
-	var serviceURL string = fmt.Sprintf("%s/services", ks.ServerURL())
+	var serviceURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), servicesResource)
 
 	payload, err := json.Marshal(KongServiceRequest{
 		Name:    newKongService.name,
@@ -116,7 +120,7 @@ func (ks *KongServer) AddService(newKongService *KongService, jsonOutput bool) e
 // query a service by Id
 func (ks *KongServer) QueryService(id string, jsonOutput bool) error {
 
-	var serviceURL string = fmt.Sprintf("%s/services/%s", ks.ServerURL(), id)
+	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), servicesResource, id)
 
 	//	send a request to Kong to query the service by id
 	resp, err := http.Get(serviceURL)
@@ -159,7 +163,7 @@ func (ks *KongServer) QueryService(id string, jsonOutput bool) error {
 // list all services
 func (ks *KongServer) ListServices(jsonOutput bool) error {
 
-	var serviceURL string = fmt.Sprintf("%s/services/", ks.ServerURL())
+	var serviceURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), servicesResource)
 
 	//	send a request to Kong to get a list of all services
 	resp, err := http.Get(serviceURL)

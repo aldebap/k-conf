@@ -61,14 +61,18 @@ type KongRouteResponse struct {
 
 // kong route list response payload
 type KongRouteListResponse struct {
-	Data []KongServiceResponse `json:"data"`
-	Next string                `json:"next"`
+	Data []KongRouteResponse `json:"data"`
+	Next string              `json:"next"`
 }
+
+const (
+	routesResource string = "routes"
+)
 
 // add a new route to Kong
 func (ks *KongServer) AddRoute(newKongRoute *KongRoute, jsonOutput bool) error {
 
-	var serviceURL string = fmt.Sprintf("%s/routes", ks.ServerURL())
+	var serviceURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), routesResource)
 
 	payload, err := json.Marshal(KongRouteRequest{
 		Name:      newKongRoute.name,
@@ -126,7 +130,7 @@ func (ks *KongServer) AddRoute(newKongRoute *KongRoute, jsonOutput bool) error {
 // query a route by Id
 func (ks *KongServer) QueryRoute(id string, jsonOutput bool) error {
 
-	var serviceURL string = fmt.Sprintf("%s/routes/%s", ks.ServerURL(), id)
+	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
 
 	//	send a request to Kong to query the route by id
 	resp, err := http.Get(serviceURL)
@@ -161,6 +165,54 @@ func (ks *KongServer) QueryRoute(id string, jsonOutput bool) error {
 
 		fmt.Printf("%s\nroute: %s - %s %s:%s --> Service Id: %s\n", resp.Status,
 			routeResp.Name, routeResp.Methods, routeResp.Protocols, routeResp.Paths, routeResp.Service.Id)
+	}
+
+	return nil
+}
+
+// list all routes
+func (ks *KongServer) ListRoutes(jsonOutput bool) error {
+
+	var serviceURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), routesResource)
+
+	//	send a request to Kong to get a list of all routes
+	resp, err := http.Get(serviceURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("error sending list routes command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var routeListResp KongRouteListResponse
+
+		err = json.Unmarshal(respPayload, &routeListResp)
+		if err != nil {
+			return err
+		}
+
+		if len(routeListResp.Data) == 0 {
+			fmt.Printf("%s\nNo routes\n", resp.Status)
+
+			return nil
+		}
+
+		fmt.Printf("%s\nroute list\n", resp.Status)
+		for _, route := range routeListResp.Data {
+			fmt.Printf("%s: %s - %s %s:%s --> Service Id: %s\n", route.Id,
+				route.Name, route.Methods, route.Protocols, route.Paths, route.Service.Id)
+		}
 	}
 
 	return nil
