@@ -64,7 +64,7 @@ const (
 )
 
 // add a new service to Kong
-func (ks *KongServer) AddService(newKongService *KongService, jsonOutput bool) error {
+func (ks *KongServer) AddService(newKongService *KongService, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), servicesResource)
 
@@ -91,9 +91,10 @@ func (ks *KongServer) AddService(newKongService *KongService, jsonOutput bool) e
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
-		return errors.New("error sending add service command to Kong: " + resp.Status)
+		return errors.New("fail sending add service command to Kong: " + resp.Status)
 	}
 
+	//	parse response payload
 	var respPayload []byte
 
 	respPayload, err = io.ReadAll(resp.Body)
@@ -101,24 +102,28 @@ func (ks *KongServer) AddService(newKongService *KongService, jsonOutput bool) e
 		return err
 	}
 
-	if jsonOutput {
+	var serviceResp KongServiceResponse
+
+	err = json.Unmarshal(respPayload, &serviceResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
-		var serviceResp KongServiceResponse
-
-		err = json.Unmarshal(respPayload, &serviceResp)
-		if err != nil {
-			return err
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nnew service ID: %s\n", resp.Status, serviceResp.Id)
+		} else {
+			fmt.Printf("%s\n", serviceResp.Id)
 		}
-
-		fmt.Printf("%s\nnew service ID: %s\n", resp.Status, serviceResp.Id)
 	}
 
 	return nil
 }
 
 // query a service by Id
-func (ks *KongServer) QueryService(id string, jsonOutput bool) error {
+func (ks *KongServer) QueryService(id string, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), servicesResource, id)
 
@@ -129,11 +134,11 @@ func (ks *KongServer) QueryService(id string, jsonOutput bool) error {
 	}
 
 	if resp.StatusCode == http.StatusNotFound {
-		return errors.New("service not found for the id: " + id)
+		return errors.New("service not found")
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("error sending query service command to Kong: " + resp.Status)
+		return errors.New("fail sending query service command to Kong: " + resp.Status)
 	}
 
 	var respPayload []byte
@@ -143,7 +148,7 @@ func (ks *KongServer) QueryService(id string, jsonOutput bool) error {
 		return err
 	}
 
-	if jsonOutput {
+	if options.jsonOutput {
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
 		var serviceResp KongServiceResponse
@@ -153,15 +158,20 @@ func (ks *KongServer) QueryService(id string, jsonOutput bool) error {
 			return err
 		}
 
-		fmt.Printf("%s\nservice: %s --> %s://%s:%d%s\n", resp.Status,
-			serviceResp.Name, serviceResp.Protocol, serviceResp.Host, serviceResp.Port, serviceResp.Path)
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nservice: %s --> %s://%s:%d%s\n", resp.Status,
+				serviceResp.Name, serviceResp.Protocol, serviceResp.Host, serviceResp.Port, serviceResp.Path)
+		} else {
+			fmt.Printf("service: %s --> %s://%s:%d%s\n",
+				serviceResp.Name, serviceResp.Protocol, serviceResp.Host, serviceResp.Port, serviceResp.Path)
+		}
 	}
 
 	return nil
 }
 
 // list all services
-func (ks *KongServer) ListServices(jsonOutput bool) error {
+func (ks *KongServer) ListServices(options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), servicesResource)
 
@@ -172,7 +182,7 @@ func (ks *KongServer) ListServices(jsonOutput bool) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("error sending list services command to Kong: " + resp.Status)
+		return errors.New("fail sending list service command to Kong: " + resp.Status)
 	}
 
 	var respPayload []byte
@@ -182,7 +192,7 @@ func (ks *KongServer) ListServices(jsonOutput bool) error {
 		return err
 	}
 
-	if jsonOutput {
+	if options.jsonOutput {
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
 		var serviceListResp KongServiceListResponse
@@ -193,12 +203,19 @@ func (ks *KongServer) ListServices(jsonOutput bool) error {
 		}
 
 		if len(serviceListResp.Data) == 0 {
-			fmt.Printf("%s\nNo services\n", resp.Status)
+			if options.verbose {
+				fmt.Printf("%s\nNo services\n", resp.Status)
+			} else {
+				fmt.Printf("No services\n")
+			}
 
 			return nil
 		}
 
-		fmt.Printf("%s\nservice list\n", resp.Status)
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nservice list\n", resp.Status)
+		}
+
 		for _, service := range serviceListResp.Data {
 			fmt.Printf("%s: %s --> %s://%s:%d%s\n", service.Id, service.Name,
 				service.Protocol, service.Host, service.Port, service.Path)

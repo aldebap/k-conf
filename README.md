@@ -1,7 +1,10 @@
 # kconf
 
 This is just a **cli** utility to configure [Kong Gateway](https://konghq.com/products/kong-gateway).
-The inspiration came from [GCP gcloud](https://cloud.google.com/sdk/gcloud/)
+The inspiration came from [GCP gcloud](https://cloud.google.com/sdk/gcloud/).
+
+The goal of kconf is to implement calls to all [Kong APIs](https://docs.konghq.com/gateway/api/admin-oss/latest/)
+using a **cli** interface.
 
 ## Building kconf
 
@@ -26,8 +29,8 @@ kconf -json-output add service --name=Products --url=http://localhost:8080/api/v
 - [X] ~~Endpoint to get a route~~
 - [X] ~~Endpoint to get a list of routes~~
 - [ ] Endpoint to delete a route
-- [ ] Set ENV variable with the ID from command add
-- [ ] --silent option
+- [X] ~~Set ENV variable with the ID from command add (canceled)~~
+- [X] ~~--silent option (replaced by --verbose)~~
 - [ ] Test automation
 - [ ] Action to build and test
 - [ ] Create a dev branch

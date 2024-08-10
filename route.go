@@ -70,7 +70,7 @@ const (
 )
 
 // add a new route to Kong
-func (ks *KongServer) AddRoute(newKongRoute *KongRoute, jsonOutput bool) error {
+func (ks *KongServer) AddRoute(newKongRoute *KongRoute, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), routesResource)
 
@@ -101,9 +101,10 @@ func (ks *KongServer) AddRoute(newKongRoute *KongRoute, jsonOutput bool) error {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusCreated {
-		return errors.New("error sending add route command to Kong: " + resp.Status)
+		return errors.New("fail sending add route command to Kong: " + resp.Status)
 	}
 
+	//	parse response payload
 	var respPayload []byte
 
 	respPayload, err = io.ReadAll(resp.Body)
@@ -111,24 +112,28 @@ func (ks *KongServer) AddRoute(newKongRoute *KongRoute, jsonOutput bool) error {
 		return err
 	}
 
-	if jsonOutput {
+	var routeResp KongRouteResponse
+
+	err = json.Unmarshal(respPayload, &routeResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
-		var routeResp KongRouteResponse
-
-		err = json.Unmarshal(respPayload, &routeResp)
-		if err != nil {
-			return err
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nnew route ID: %s\n", resp.Status, routeResp.Id)
+		} else {
+			fmt.Printf("%s\n", routeResp.Id)
 		}
-
-		fmt.Printf("%s\nnew route ID: %s\n", resp.Status, routeResp.Id)
 	}
 
 	return nil
 }
 
 // query a route by Id
-func (ks *KongServer) QueryRoute(id string, jsonOutput bool) error {
+func (ks *KongServer) QueryRoute(id string, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
 
@@ -139,11 +144,11 @@ func (ks *KongServer) QueryRoute(id string, jsonOutput bool) error {
 	}
 
 	if resp.StatusCode == http.StatusNotFound {
-		return errors.New("route not found for the id: " + id)
+		return errors.New("route not found")
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("error sending query route command to Kong: " + resp.Status)
+		return errors.New("fail sending query route command to Kong: " + resp.Status)
 	}
 
 	var respPayload []byte
@@ -153,7 +158,7 @@ func (ks *KongServer) QueryRoute(id string, jsonOutput bool) error {
 		return err
 	}
 
-	if jsonOutput {
+	if options.jsonOutput {
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
 		var routeResp KongRouteResponse
@@ -163,15 +168,20 @@ func (ks *KongServer) QueryRoute(id string, jsonOutput bool) error {
 			return err
 		}
 
-		fmt.Printf("%s\nroute: %s - %s %s:%s --> Service Id: %s\n", resp.Status,
-			routeResp.Name, routeResp.Methods, routeResp.Protocols, routeResp.Paths, routeResp.Service.Id)
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nroute: %s - %s %s:%s --> Service Id: %s\n", resp.Status,
+				routeResp.Name, routeResp.Methods, routeResp.Protocols, routeResp.Paths, routeResp.Service.Id)
+		} else {
+			fmt.Printf("route: %s - %s %s:%s --> Service Id: %s\n",
+				routeResp.Name, routeResp.Methods, routeResp.Protocols, routeResp.Paths, routeResp.Service.Id)
+		}
 	}
 
 	return nil
 }
 
 // list all routes
-func (ks *KongServer) ListRoutes(jsonOutput bool) error {
+func (ks *KongServer) ListRoutes(options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), routesResource)
 
@@ -182,7 +192,7 @@ func (ks *KongServer) ListRoutes(jsonOutput bool) error {
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("error sending list routes command to Kong: " + resp.Status)
+		return errors.New("fail sending list route command to Kong: " + resp.Status)
 	}
 
 	var respPayload []byte
@@ -192,7 +202,7 @@ func (ks *KongServer) ListRoutes(jsonOutput bool) error {
 		return err
 	}
 
-	if jsonOutput {
+	if options.jsonOutput {
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
 		var routeListResp KongRouteListResponse
@@ -203,12 +213,19 @@ func (ks *KongServer) ListRoutes(jsonOutput bool) error {
 		}
 
 		if len(routeListResp.Data) == 0 {
-			fmt.Printf("%s\nNo routes\n", resp.Status)
+			if options.verbose {
+				fmt.Printf("%s\nNo routes\n", resp.Status)
+			} else {
+				fmt.Printf("No routes\n")
+			}
 
 			return nil
 		}
 
-		fmt.Printf("%s\nroute list\n", resp.Status)
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nroute list\n", resp.Status)
+		}
+
 		for _, route := range routeListResp.Data {
 			fmt.Printf("%s: %s - %s %s:%s --> Service Id: %s\n", route.Id,
 				route.Name, route.Methods, route.Protocols, route.Paths, route.Service.Id)

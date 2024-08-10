@@ -39,7 +39,7 @@ func (ks *KongServer) ServerURL() string {
 }
 
 // check Kong status
-func (ks *KongServer) CheckStatus(jsonOutput bool) error {
+func (ks *KongServer) CheckStatus(options Options) error {
 
 	var serviceURL string = ks.ServerURL()
 
@@ -53,7 +53,7 @@ func (ks *KongServer) CheckStatus(jsonOutput bool) error {
 		return errors.New("error sending check status command to Kong: " + resp.Status)
 	}
 
-	if jsonOutput {
+	if options.jsonOutput {
 		var respPayload []byte
 
 		respPayload, err := io.ReadAll(resp.Body)
