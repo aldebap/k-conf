@@ -1,5 +1,7 @@
 # kconf
 
+[![Go Build](https://github.com/aldebap/kconf/actions/workflows/go.yml/badge.svg)](https://github.com/aldebap/kconf/actions/workflows/go.yml)
+
 This is just a **cli** utility to configure [Kong Gateway](https://konghq.com/products/kong-gateway).
 The inspiration came from [GCP gcloud](https://cloud.google.com/sdk/gcloud/).
 
@@ -24,7 +26,7 @@ kconf -json-output add service --name=Products --url=http://localhost:8080/api/v
 
 ### Features backlog (for v0.1 release)
 
-- [ ] Endpoint to delete a service
+- [X] ~~Endpoint to delete a service~~
 - [X] ~~Endpoint to add a new route~~
 - [X] ~~Endpoint to get a route~~
 - [X] ~~Endpoint to get a list of routes~~

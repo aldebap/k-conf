@@ -94,6 +94,11 @@ func kconf(myKongServer *KongServer, command []string, options Options) error {
 		return commandList(myKongServer, command[1:], options)
 	}
 
+	//	command delete
+	if command[0] == "delete" {
+		return commandDelete(myKongServer, command[1:], options)
+	}
+
 	return errors.New("invalid command: " + command[0])
 }
 
@@ -262,6 +267,45 @@ func commandList(myKongServer *KongServer, command []string, options Options) er
 	if command[0] == "route" {
 		return myKongServer.ListRoutes(options)
 	}
+
+	return errors.New("invalid entity for command list: " + command[0])
+}
+
+// command delete
+func commandDelete(myKongServer *KongServer, command []string, options Options) error {
+
+	if len(command) == 0 {
+		return errors.New("missing entity for command delete: available entities: service, route")
+	}
+
+	//	compile all regex required to extract parameters for command query
+	idRegEx, err := regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	if command[0] == "service" {
+		var id string
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+		}
+
+		if len(id) == 0 {
+			return errors.New("missing service id: option --id={id} required for this command")
+		}
+
+		return myKongServer.DeleteService(id, options)
+	}
+
+	/*
+		if command[0] == "route" {
+			return myKongServer.ListRoutes(options)
+		}
+	*/
 
 	return errors.New("invalid entity for command list: " + command[0])
 }

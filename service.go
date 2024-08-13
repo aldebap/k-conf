@@ -224,3 +224,37 @@ func (ks *KongServer) ListServices(options Options) error {
 
 	return nil
 }
+
+// delete a service by Id
+func (ks *KongServer) DeleteService(id string, options Options) error {
+
+	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), servicesResource, id)
+
+	//	send a request to Kong to delete the service by id
+	req, err := http.NewRequest("DELETE", serviceURL, bytes.NewBuffer([]byte("")))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New("fail sending delete service command to Kong: " + resp.Status)
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n{}\n", resp.Status)
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\n", resp.Status)
+		}
+	}
+
+	return nil
+}
