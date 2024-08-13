@@ -32,5 +32,5 @@ kconf -json-output add service --name=Products --url=http://localhost:8080/api/v
 - [X] ~~Set ENV variable with the ID from command add (canceled)~~
 - [X] ~~--silent option (replaced by --verbose)~~
 - [ ] Test automation
-- [ ] Action to build and test
+- [X] ~~Action to build and test~~
 - [ ] Create a dev branch
