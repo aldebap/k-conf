@@ -64,7 +64,7 @@ const (
 )
 
 // add a new service to Kong
-func (ks *KongServer) AddService(newKongService *KongService, options Options) error {
+func (ks *KongServerDomain) AddService(newKongService *KongService, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), servicesResource)
 
@@ -123,7 +123,7 @@ func (ks *KongServer) AddService(newKongService *KongService, options Options) e
 }
 
 // query a service by Id
-func (ks *KongServer) QueryService(id string, options Options) error {
+func (ks *KongServerDomain) QueryService(id string, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), servicesResource, id)
 
@@ -171,7 +171,7 @@ func (ks *KongServer) QueryService(id string, options Options) error {
 }
 
 // list all services
-func (ks *KongServer) ListServices(options Options) error {
+func (ks *KongServerDomain) ListServices(options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), servicesResource)
 
@@ -226,7 +226,7 @@ func (ks *KongServer) ListServices(options Options) error {
 }
 
 // delete a service by Id
-func (ks *KongServer) DeleteService(id string, options Options) error {
+func (ks *KongServerDomain) DeleteService(id string, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), servicesResource, id)
 

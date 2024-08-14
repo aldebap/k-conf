@@ -13,22 +13,38 @@ import (
 	"net/http"
 )
 
+// Kong server interface
+type KongServer interface {
+	ServerURL() string
+	CheckStatus(options Options) error
+
+	AddService(newKongService *KongService, options Options) error
+	QueryService(id string, options Options) error
+	ListServices(options Options) error
+	DeleteService(id string, options Options) error
+
+	AddRoute(newKongRoute *KongRoute, options Options) error
+	QueryRoute(id string, options Options) error
+	ListRoutes(options Options) error
+	DeleteRoute(id string, options Options) error
+}
+
 // Kong server attributes
-type KongServer struct {
+type KongServerDomain struct {
 	address string
 	port    int
 }
 
 // create a new Kong server configuration
-func NewKongServer(address string, port int) *KongServer {
+func NewKongServer(address string, port int) KongServer {
 
-	return &KongServer{
+	return &KongServerDomain{
 		address: address,
 		port:    port,
 	}
 }
 
-func (ks *KongServer) ServerURL() string {
+func (ks *KongServerDomain) ServerURL() string {
 	var kongUrl string = ks.address
 
 	if ks.port != 0 {
@@ -39,7 +55,7 @@ func (ks *KongServer) ServerURL() string {
 }
 
 // check Kong status
-func (ks *KongServer) CheckStatus(options Options) error {
+func (ks *KongServerDomain) CheckStatus(options Options) error {
 
 	var serviceURL string = ks.ServerURL()
 

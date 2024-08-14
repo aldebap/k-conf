@@ -68,7 +68,7 @@ func main() {
 }
 
 // kconf utility
-func kconf(myKongServer *KongServer, command []string, options Options) error {
+func kconf(myKongServer KongServer, command []string, options Options) error {
 
 	if len(command) == 0 {
 		return errors.New("missing command: available commands: status, add, query, list")
@@ -103,7 +103,7 @@ func kconf(myKongServer *KongServer, command []string, options Options) error {
 }
 
 // command add
-func commandAdd(myKongServer *KongServer, command []string, options Options) error {
+func commandAdd(myKongServer KongServer, command []string, options Options) error {
 
 	if len(command) == 0 {
 		return errors.New("missing entity for command add: available entities: service, route")
@@ -204,7 +204,7 @@ func commandAdd(myKongServer *KongServer, command []string, options Options) err
 }
 
 // command query
-func commandQuery(myKongServer *KongServer, command []string, options Options) error {
+func commandQuery(myKongServer KongServer, command []string, options Options) error {
 
 	if len(command) == 0 {
 		return errors.New("missing entity for command query: available entities: service, route")
@@ -254,7 +254,7 @@ func commandQuery(myKongServer *KongServer, command []string, options Options) e
 }
 
 // command list
-func commandList(myKongServer *KongServer, command []string, options Options) error {
+func commandList(myKongServer KongServer, command []string, options Options) error {
 
 	if len(command) == 0 {
 		return errors.New("missing entity for command list: available entities: service, route")
@@ -272,7 +272,7 @@ func commandList(myKongServer *KongServer, command []string, options Options) er
 }
 
 // command delete
-func commandDelete(myKongServer *KongServer, command []string, options Options) error {
+func commandDelete(myKongServer KongServer, command []string, options Options) error {
 
 	if len(command) == 0 {
 		return errors.New("missing entity for command delete: available entities: service, route")
@@ -284,16 +284,16 @@ func commandDelete(myKongServer *KongServer, command []string, options Options) 
 		return err
 	}
 
-	if command[0] == "service" {
-		var id string
+	var id string
 
-		for i := 1; i < len(command); i++ {
-			match := idRegEx.FindAllStringSubmatch(command[i], -1)
-			if len(match) == 1 {
-				id = match[0][1]
-			}
+	for i := 1; i < len(command); i++ {
+		match := idRegEx.FindAllStringSubmatch(command[i], -1)
+		if len(match) == 1 {
+			id = match[0][1]
 		}
+	}
 
+	if command[0] == "service" {
 		if len(id) == 0 {
 			return errors.New("missing service id: option --id={id} required for this command")
 		}
@@ -301,11 +301,13 @@ func commandDelete(myKongServer *KongServer, command []string, options Options) 
 		return myKongServer.DeleteService(id, options)
 	}
 
-	/*
-		if command[0] == "route" {
-			return myKongServer.ListRoutes(options)
+	if command[0] == "route" {
+		if len(id) == 0 {
+			return errors.New("missing route id: option --id={id} required for this command")
 		}
-	*/
+
+		return myKongServer.DeleteRoute(id, options)
+	}
 
 	return errors.New("invalid entity for command list: " + command[0])
 }

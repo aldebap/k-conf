@@ -70,7 +70,7 @@ const (
 )
 
 // add a new route to Kong
-func (ks *KongServer) AddRoute(newKongRoute *KongRoute, options Options) error {
+func (ks *KongServerDomain) AddRoute(newKongRoute *KongRoute, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), routesResource)
 
@@ -133,7 +133,7 @@ func (ks *KongServer) AddRoute(newKongRoute *KongRoute, options Options) error {
 }
 
 // query a route by Id
-func (ks *KongServer) QueryRoute(id string, options Options) error {
+func (ks *KongServerDomain) QueryRoute(id string, options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
 
@@ -181,7 +181,7 @@ func (ks *KongServer) QueryRoute(id string, options Options) error {
 }
 
 // list all routes
-func (ks *KongServer) ListRoutes(options Options) error {
+func (ks *KongServerDomain) ListRoutes(options Options) error {
 
 	var serviceURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), routesResource)
 
@@ -229,6 +229,40 @@ func (ks *KongServer) ListRoutes(options Options) error {
 		for _, route := range routeListResp.Data {
 			fmt.Printf("%s: %s - %s %s:%s --> Service Id: %s\n", route.Id,
 				route.Name, route.Methods, route.Protocols, route.Paths, route.Service.Id)
+		}
+	}
+
+	return nil
+}
+
+// delete a route by Id
+func (ks *KongServerDomain) DeleteRoute(id string, options Options) error {
+
+	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
+
+	//	send a request to Kong to delete the route by id
+	req, err := http.NewRequest("DELETE", serviceURL, bytes.NewBuffer([]byte("")))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New("fail sending delete route command to Kong: " + resp.Status)
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n{}\n", resp.Status)
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\n", resp.Status)
 		}
 	}
 

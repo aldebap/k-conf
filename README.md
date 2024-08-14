@@ -30,7 +30,7 @@ kconf -json-output add service --name=Products --url=http://localhost:8080/api/v
 - [X] ~~Endpoint to add a new route~~
 - [X] ~~Endpoint to get a route~~
 - [X] ~~Endpoint to get a list of routes~~
-- [ ] Endpoint to delete a route
+- [X] ~~Endpoint to delete a route~~
 - [X] ~~Set ENV variable with the ID from command add (canceled)~~
 - [X] ~~--silent option (replaced by --verbose)~~
 - [ ] Test automation
