@@ -15,7 +15,7 @@ function unitTestTarget {
     #local   GO_TEST_FLAGS=''
     GO_TEST_FLAGS=''
 
-    echo -e "[build] ${TARGET}: ${GREEN}running unit tests on package ${PACKAGE_TARGET}${NOCOLOR}"
+    echo -e "[unit-test] ${TARGET}: ${GREEN}running unit tests on package ${PACKAGE_TARGET}${NOCOLOR}"
 
     if [ ! -z "${PACKAGE_TARGET}" ]
     then
