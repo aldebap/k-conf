@@ -1,12 +1,12 @@
 #!  /usr/bin/ksh
 
-#   test scenatio #03.3
-export TEST_SCENARIO='03.3'
-export DESCRIPTION='command add service without parameters'
+#   test scenatio #03.5
+export TEST_SCENARIO='03.5'
+export DESCRIPTION='command add route without parameters'
 
-export TARGET_OPTIONS='add service'
+export TARGET_OPTIONS='add route'
 export EXPECTED_EXIT_STATUS=255
-export EXPECTED_RESULT='[error] fail sending add service command to Kong: 400 Bad Request'
+export EXPECTED_RESULT='[error] fail sending add route command to Kong: 400 Bad Request'
 
 echo -e "[run-test] ${TARGET}: ${GREEN}running test scenario: ${LIGHTGRAY}#${TEST_SCENARIO}: ${DESCRIPTION}${NOCOLOR}"
 

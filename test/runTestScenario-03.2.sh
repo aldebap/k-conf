@@ -2,11 +2,11 @@
 
 #   test scenatio #03.2
 export TEST_SCENARIO='03.2'
-export DESCRIPTION='command add service without parameters'
+export DESCRIPTION='command add with invalid entity'
 
-export TARGET_OPTIONS='add service'
+export TARGET_OPTIONS='add bug'
 export EXPECTED_EXIT_STATUS=255
-export EXPECTED_RESULT='[error] fail sending add service command to Kong: 400 Bad Request'
+export EXPECTED_RESULT='[error] invalid entity for command add: bug'
 
 echo -e "[run-test] ${TARGET}: ${GREEN}running test scenario: ${LIGHTGRAY}#${TEST_SCENARIO}: ${DESCRIPTION}${NOCOLOR}"
 

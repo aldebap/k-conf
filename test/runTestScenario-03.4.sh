@@ -1,12 +1,13 @@
 #!  /usr/bin/ksh
 
-#   test scenatio #03.3
-export TEST_SCENARIO='03.3'
-export DESCRIPTION='command add service without parameters'
+#   test scenatio #03.4
+export TEST_SCENARIO='03.4'
+export DESCRIPTION='command add service'
 
-export TARGET_OPTIONS='add service'
-export EXPECTED_EXIT_STATUS=255
-export EXPECTED_RESULT='[error] fail sending add service command to Kong: 400 Bad Request'
+export TARGET_OPTIONS='-verbose add service --name=test-scenario-03.4 --url=http://localhost:8080/api/v1/test'
+export EXPECTED_EXIT_STATUS=0
+export EXPECTED_RESULT='^new service ID: (\S+)$'
+export SERVICE_GUID=
 
 echo -e "[run-test] ${TARGET}: ${GREEN}running test scenario: ${LIGHTGRAY}#${TEST_SCENARIO}: ${DESCRIPTION}${NOCOLOR}"
 
@@ -21,7 +22,10 @@ fi
 
 if [ ${EXIT_STATUS} -eq 0 ]
 then
-    if [ "$( cat ${OUTPUT} )" != "${EXPECTED_RESULT}" ]
+    RESULT=$( cat ${OUTPUT} | perl -n -e "if( /${EXPECTED_RESULT}/ ) { print qq/\$1\n/; }" )
+    SERVICE_GUID=${RESULT}
+
+    if [ -z "${RESULT}" ]
     then
 	    echo -e "${RED}[error] unexpected result:${LIGHTGRAY} '$( cat ${OUTPUT} )' should be '${EXPECTED_RESULT}'${NOCOLOR}"
 	    exit 1
