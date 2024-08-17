@@ -32,6 +32,10 @@ function functionalTestTarget {
 
     echo -e "[build] ${TARGET}: ${GREEN}running functional tests on target ${LIGHTGRAY}${PROJECT_TARGET}${NOCOLOR}"
 
+    #   first start Kong
+    . cmd/startKong.sh
+    sleep 10s
+
     for TEST_SCRIPT in ${TEST_DIRECTORY}/runTestScenario*
     do
         if [ -z "${SINGLE_TEST_SCRIPT}" -o "${TEST_SCRIPT}" == "${SINGLE_TEST_SCRIPT}" ]
@@ -39,6 +43,9 @@ function functionalTestTarget {
             . ${TEST_SCRIPT}
         fi
     done
+
+    #   stop Kong afterwards
+    . cmd/stopKong.sh
 }
 
 export  TARGET=functional-test
