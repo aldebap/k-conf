@@ -1,12 +1,12 @@
 #!  /usr/bin/ksh
 
-#   test scenatio #01
-export TEST_SCENARIO='01'
-export DESCRIPTION='version option'
+#   test scenatio #02
+export TEST_SCENARIO='02'
+export DESCRIPTION='command status'
 
-export TARGET_OPTIONS='-version'
+export TARGET_OPTIONS='status'
 export EXPECTED_EXIT_STATUS=0
-export EXPECTED_RESULT='kconf 0.1'
+export EXPECTED_RESULT='200 OK'
 
 echo -e "[run-test] ${TARGET}: ${GREEN}running test scenario: ${LIGHTGRAY}#${TEST_SCENARIO}: ${DESCRIPTION}${NOCOLOR}"
 

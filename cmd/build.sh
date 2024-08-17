@@ -13,7 +13,7 @@ export  VERBOSE='true'
 #   function to execute the "build" target action
 function buildTarget {
 
-    echo -e "[build] ${TARGET}: ${GREEN}build target ${PROJECT_TARGET}${NOCOLOR}"
+    echo -e "[build] ${TARGET}: ${GREEN}build target ${LIGHTGRAY}${PROJECT_TARGET}${NOCOLOR}"
 
     if [ ! -d ${BINARY_DIRECTORY} ]
     then

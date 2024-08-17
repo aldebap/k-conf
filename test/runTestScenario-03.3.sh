@@ -1,12 +1,12 @@
 #!  /usr/bin/ksh
 
-#   test scenatio #01
-export TEST_SCENARIO='01'
-export DESCRIPTION='version option'
+#   test scenatio #03.3
+export TEST_SCENARIO='03.3'
+export DESCRIPTION='command add service'
 
-export TARGET_OPTIONS='-version'
-export EXPECTED_EXIT_STATUS=0
-export EXPECTED_RESULT='kconf 0.1'
+export TARGET_OPTIONS='add service --name=test-scenario-03.3 --url=localhost:8080/api/v1/test'
+export EXPECTED_EXIT_STATUS=255
+export EXPECTED_RESULT='[error] fail sending add service command to Kong: 400 Bad Request'
 
 echo -e "[run-test] ${TARGET}: ${GREEN}running test scenario: ${LIGHTGRAY}#${TEST_SCENARIO}: ${DESCRIPTION}${NOCOLOR}"
 
@@ -22,6 +22,7 @@ fi
 if [ ${EXIT_STATUS} -eq 0 ]
 then
     if [ "$( cat ${OUTPUT} )" != "${EXPECTED_RESULT}" ]
+    #if [ -z "$( cat ${OUTPUT} | grep ${EXPECTED_RESULT} )" ]
     then
 	    echo -e "${RED}[error] unexpected result:${LIGHTGRAY} '$( cat ${OUTPUT} )' should be '${EXPECTED_RESULT}'${NOCOLOR}"
 	    exit 1

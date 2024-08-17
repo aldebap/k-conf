@@ -1,12 +1,12 @@
 #!  /usr/bin/ksh
 
-#   test scenatio #01
-export TEST_SCENARIO='01'
-export DESCRIPTION='version option'
+#   test scenatio #03.1
+export TEST_SCENARIO='03.1'
+export DESCRIPTION='command add without entity'
 
-export TARGET_OPTIONS='-version'
-export EXPECTED_EXIT_STATUS=0
-export EXPECTED_RESULT='kconf 0.1'
+export TARGET_OPTIONS='add'
+export EXPECTED_EXIT_STATUS=255
+export EXPECTED_RESULT='[error] missing entity for command add: available entities: service, route'
 
 echo -e "[run-test] ${TARGET}: ${GREEN}running test scenario: ${LIGHTGRAY}#${TEST_SCENARIO}: ${DESCRIPTION}${NOCOLOR}"
 
