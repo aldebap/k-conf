@@ -46,4 +46,4 @@ jobs:
         shell: bash
         run: |
           cd ${HOME_PATH}
-          ./cmd/functional-test.sh
+          ./cmd/functional-test.sh --start-kong
