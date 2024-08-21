@@ -53,10 +53,26 @@ function performFunctionalTestScenario {
 
     if [ ${EXIT_STATUS} -eq 0 ]
     then
-#        if [ "$( cat ${OUTPUT} )" != "${EXPECTED_RESULT}" ]
-        export  SUCCESS=isResultExpected
+        SUCCESS='false'
 
-        if [ ${SUCCESS} ]
+        if [ "${EXPECTED_RESULT_TYPE}" == 'string' ]
+        then
+            if [ "$( cat ${OUTPUT} )" == "${EXPECTED_RESULT}" ]
+            then
+                SUCCESS='true'
+            fi
+        else if [ "${EXPECTED_RESULT_TYPE}" == 'regex' ]
+        then
+            SUCCESS=$( cat ${OUTPUT} | perl -n -e "if( /${EXPECTED_RESULT}/ ) { print qq/true/; }" )
+        else if [ "${EXPECTED_RESULT_TYPE}" == 'regex_id' ]
+        then
+            SUCCESS=$( cat ${OUTPUT} | perl -n -e "if( /${EXPECTED_RESULT}/ ) { print qq/true/; }" )
+            export  REGEX_RESULT=$( cat ${OUTPUT} | perl -n -e "if( /${EXPECTED_RESULT}/ ) { print qq/\$1\n/; }" )
+        fi
+        fi
+        fi
+
+        if [ "${SUCCESS}" == 'true' ]
         then
             echo -e "[run-test] ${GREEN}   --- PASS${NOCOLOR}"
         else
