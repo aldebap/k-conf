@@ -58,4 +58,4 @@ jobs:
       - name: Release
         shell: bash
         run: |
-          goreleaser build
+          goreleaser build --snapshot --clean
