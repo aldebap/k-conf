@@ -30,6 +30,13 @@ jobs:
         with:
           go-version: '1.20'
 
+      - name: Set up Goreleaser
+        shell: bash
+        run: |
+          echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+          sudo apt update
+          sudo apt install goreleaser
+
       - name: Build
         shell: bash
         run: |
@@ -47,3 +54,8 @@ jobs:
         run: |
           cd ${HOME_PATH}
           ./cmd/functional-test.sh --start-kong
+
+      - name: Release
+        shell: bash
+        run: |
+          goreleaser build --snapshot --clean
