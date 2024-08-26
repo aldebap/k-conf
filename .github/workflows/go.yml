@@ -47,3 +47,8 @@ jobs:
         run: |
           cd ${HOME_PATH}
           ./cmd/functional-test.sh --start-kong
+
+      - name: Release
+        shell: bash
+        run: |
+          goreleaser build
