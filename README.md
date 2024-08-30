@@ -2,15 +2,13 @@
 
 [![Go Build](https://github.com/aldebap/kconf/actions/workflows/go.yml/badge.svg)](https://github.com/aldebap/kconf/actions/workflows/go.yml)
 
-This is just a **cli** utility to configure [Kong Gateway](https://konghq.com/products/kong-gateway).
-The inspiration came from [GCP gcloud](https://cloud.google.com/sdk/gcloud/).
-
-The goal of kconf is to implement calls to all [Kong APIs](https://docs.konghq.com/gateway/api/admin-oss/latest/)
-using a **cli** interface.
+kconf is just a simple utility to configure [Kong Gateway](https://konghq.com/products/kong-gateway) using **cli** (Command Line Interface).
+To achieve this, kconf was planned to implement calls to all [Kong APIs](https://docs.konghq.com/gateway/api/admin-oss/latest/).
+The initial idea for kconf was based on [GCP gcloud](https://cloud.google.com/sdk/gcloud/).
 
 ## Building kconf
 
-xpto
+kconf is 100% written in Goland and this repo provides a simple script (ksh) to build it by just typing the following:
 
 ```sh
 cmd/build.sh
@@ -18,11 +16,29 @@ cmd/build.sh
 
 ## Using kconf
 
-xpto
+kconf **cli** accepts a command followed by an entity.
+The available commands are: add, query, list, update, delete and status.
+The Kong entities are: service, route and consumer.
+
+For some commands, like command add, there are options to describe the entity to be added:
 
 ```sh
-kconf -json-output add service --name=Products --url=http://localhost:8080/api/v1/products
+kconf add service --name=Products --url=http://localhost:8080/api/v1/products
 ```
+
+```sh
+kconf add route --name=Products --protocols=http --methods=GET,POST --paths=/api/v1/products --service-id=27168276282768
+```
+
+### Features backlog (for v0.2 release)
+
+- [ ] Endpoint to update a service
+- [ ] Endpoint to update a route
+- [ ] Endpoint to add a new consumer
+- [ ] Endpoint to get a consumer
+- [ ] Endpoint to get a list of consumers
+- [ ] Endpoint to update a consumer
+- [ ] Endpoint to delete a consumer
 
 ### Features backlog (for v0.1 release)
 
