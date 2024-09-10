@@ -225,6 +225,65 @@ func (ks *KongServerDomain) ListServices(options Options) error {
 	return nil
 }
 
+// update a service in Kong
+func (ks *KongServerDomain) UpdateService(id string, updatedKongService *KongService, options Options) error {
+
+	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), servicesResource, id)
+
+	payload, err := json.Marshal(KongServiceRequest{
+		Name:    updatedKongService.name,
+		Url:     updatedKongService.url,
+		Enabled: updatedKongService.enabled,
+	})
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("PATCH", serviceURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending patch service command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var serviceResp KongServiceResponse
+
+	err = json.Unmarshal(respPayload, &serviceResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nnew service ID: %s\n", resp.Status, serviceResp.Id)
+		} else {
+			fmt.Printf("%s\n", serviceResp.Id)
+		}
+	}
+
+	return nil
+}
+
 // delete a service by Id
 func (ks *KongServerDomain) DeleteService(id string, options Options) error {
 
