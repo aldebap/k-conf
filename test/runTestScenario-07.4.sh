@@ -1,7 +1,7 @@
 #!  /usr/bin/ksh
 
-#   test scenatio #06.4
-export TEST_SCENARIO='06.4'
+#   test scenatio #07.4
+export TEST_SCENARIO='07.4'
 export DESCRIPTION='command delete route'
 
 export TARGET_OPTIONS="-verbose delete route --id=${ROUTE_GUID}"

@@ -21,6 +21,7 @@ type KongServer interface {
 	AddService(newKongService *KongService, options Options) error
 	QueryService(id string, options Options) error
 	ListServices(options Options) error
+	UpdateService(id string, updatedKongService *KongService, options Options) error
 	DeleteService(id string, options Options) error
 
 	AddRoute(newKongRoute *KongRoute, options Options) error

@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	versionInfo string = "kconf 0.1"
+	versionInfo string = "kconf 0.2"
 )
 
 // execution options

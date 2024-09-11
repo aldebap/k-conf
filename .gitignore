@@ -1,6 +1,9 @@
 #   vscode files
 .vscode/*
 
+#   Personal PAT (Personal Access Token)
+pat.sh
+
 #   build output dir
 bin/**
 
