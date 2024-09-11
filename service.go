@@ -34,8 +34,8 @@ func NewKongService(name string, url string, enabled bool) *KongService {
 
 // kong service request payload
 type KongServiceRequest struct {
-	Name    string `json:"name"`
-	Url     string `json:"url"`
+	Name    string `json:"name,omitempty"`
+	Url     string `json:"url,omitempty"`
 	Enabled bool   `json:"enabled"`
 }
 
@@ -238,6 +238,8 @@ func (ks *KongServerDomain) UpdateService(id string, updatedKongService *KongSer
 	if err != nil {
 		return err
 	}
+
+	//	log.Printf("[debug] patch payload: %s", payload)
 
 	req, err := http.NewRequest("PATCH", serviceURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {

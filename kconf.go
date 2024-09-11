@@ -244,6 +244,11 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		return err
 	}
 
+	enabledRegEx, err := regexp.Compile(`^--enabled\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	var id string
 
 	for i := 1; i < len(command); i++ {
@@ -272,6 +277,20 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 			if len(match) == 1 {
 				url = match[0][1]
 			}
+
+			match = enabledRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				switch match[0][1] {
+				case "false":
+					enabled = false
+
+				case "true":
+					enabled = true
+
+				default:
+					return errors.New("wrong value for option --enabled: " + match[0][1])
+				}
+			}
 		}
 		updatedService := NewKongService(name, url, enabled)
 
@@ -286,7 +305,7 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 	//		return myKongServer.DeleteRoute(id, options)
 	//	}
 
-	return errors.New("invalid entity for command delete: " + command[0])
+	return errors.New("invalid entity for command update: " + command[0])
 }
 
 // command delete
