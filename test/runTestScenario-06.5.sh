@@ -2,11 +2,11 @@
 
 #   test scenatio #06.5
 export TEST_SCENARIO='06.5'
-export DESCRIPTION='command update service without parameters'
+export DESCRIPTION='command update service'
 
-export TARGET_OPTIONS='update service'
-export EXPECTED_EXIT_STATUS=255
-export EXPECTED_RESULT='[error] missing service id: option --id={id} required for this command'
-export EXPECTED_RESULT_TYPE='string'
+export TARGET_OPTIONS="-verbose update service --id=${SERVICE_GUID} --enabled=false"
+export EXPECTED_EXIT_STATUS=0
+export EXPECTED_RESULT='^http response status code: 200 OK'
+export EXPECTED_RESULT_TYPE='regex'
 
 performFunctionalTestScenario

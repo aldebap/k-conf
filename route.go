@@ -12,6 +12,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -42,11 +43,11 @@ type serviceId struct {
 }
 
 type KongRouteRequest struct {
-	Name      string    `json:"name"`
-	Protocols []string  `json:"protocols"`
-	Methods   []string  `json:"methods"`
-	Paths     []string  `json:"paths"`
-	Service   serviceId `json:"service"`
+	Name      string     `json:"name,omitempty"`
+	Protocols []string   `json:"protocols,omitempty"`
+	Methods   []string   `json:"methods,omitempty"`
+	Paths     []string   `json:"paths,omitempty"`
+	Service   *serviceId `json:"service,omitempty"`
 }
 
 // kong route response payload
@@ -79,7 +80,7 @@ func (ks *KongServerDomain) AddRoute(newKongRoute *KongRoute, options Options) e
 		Protocols: newKongRoute.protocols,
 		Methods:   newKongRoute.methods,
 		Paths:     newKongRoute.paths,
-		Service: serviceId{
+		Service: &serviceId{
 			Id: newKongRoute.serviceId,
 		},
 	})
@@ -229,6 +230,85 @@ func (ks *KongServerDomain) ListRoutes(options Options) error {
 		for _, route := range routeListResp.Data {
 			fmt.Printf("%s: %s - %s %s:%s --> Service Id: %s\n", route.Id,
 				route.Name, route.Methods, route.Protocols, route.Paths, route.Service.Id)
+		}
+	}
+
+	return nil
+}
+
+func (ks *KongServerDomain) UpdateRoute(id string, updatedKongRoute *KongRoute, options Options) error {
+
+	var (
+		serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
+		payload    []byte
+		err        error
+	)
+
+	if len(updatedKongRoute.serviceId) == 0 {
+
+		payload, err = json.Marshal(KongRouteRequest{
+			Name:      updatedKongRoute.name,
+			Protocols: updatedKongRoute.protocols,
+			Methods:   updatedKongRoute.methods,
+			Paths:     updatedKongRoute.paths,
+		})
+	} else {
+
+		payload, err = json.Marshal(KongRouteRequest{
+			Name:      updatedKongRoute.name,
+			Protocols: updatedKongRoute.protocols,
+			Methods:   updatedKongRoute.methods,
+			Paths:     updatedKongRoute.paths,
+			Service: &serviceId{
+				Id: updatedKongRoute.serviceId,
+			},
+		})
+	}
+	if err != nil {
+		return err
+	}
+
+	log.Printf("[debug] patch payload: %s", payload)
+
+	req, err := http.NewRequest("PATCH", serviceURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending patch service command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var routeResp KongRouteResponse
+
+	err = json.Unmarshal(respPayload, &routeResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nroute ID: %s\n", resp.Status, routeResp.Id)
+		} else {
+			fmt.Printf("%s\n", routeResp.Id)
 		}
 	}
 

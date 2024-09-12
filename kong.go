@@ -27,6 +27,7 @@ type KongServer interface {
 	AddRoute(newKongRoute *KongRoute, options Options) error
 	QueryRoute(id string, options Options) error
 	ListRoutes(options Options) error
+	UpdateRoute(id string, updatedKongRoute *KongRoute, options Options) error
 	DeleteRoute(id string, options Options) error
 }
 

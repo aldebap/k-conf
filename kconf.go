@@ -20,32 +20,23 @@ func kconf(myKongServer KongServer, command []string, options Options) error {
 	}
 
 	//	command to get Kong status
-	if command[0] == "status" {
+	switch command[0] {
+	case "status":
 		return myKongServer.CheckStatus(options)
-	}
 
-	//	command add
-	if command[0] == "add" {
+	case "add":
 		return commandAdd(myKongServer, command[1:], options)
-	}
 
-	//	command query
-	if command[0] == "query" {
+	case "query":
 		return commandQuery(myKongServer, command[1:], options)
-	}
 
-	//	command list
-	if command[0] == "list" {
+	case "list":
 		return commandList(myKongServer, command[1:], options)
-	}
 
-	//	command update
-	if command[0] == "update" {
+	case "update":
 		return commandUpdate(myKongServer, command[1:], options)
-	}
 
-	//	command delete
-	if command[0] == "delete" {
+	case "delete":
 		return commandDelete(myKongServer, command[1:], options)
 	}
 
@@ -70,6 +61,11 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		return err
 	}
 
+	enabledRegEx, err := regexp.Compile(`^--enabled\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	protocolsRegEx, err := regexp.Compile(`^--protocols\s*=\s*(\S.*)\s*$`)
 	if err != nil {
 		return err
@@ -90,7 +86,8 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		return err
 	}
 
-	if command[0] == "service" {
+	switch command[0] {
+	case "service":
 		var name string
 		var url string
 		var enabled bool = true
@@ -105,13 +102,26 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 			if len(match) == 1 {
 				url = match[0][1]
 			}
+
+			match = enabledRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				switch match[0][1] {
+				case "false":
+					enabled = false
+
+				case "true":
+					enabled = true
+
+				default:
+					return errors.New("wrong value for option --enabled: " + match[0][1])
+				}
+			}
 		}
 		newService := NewKongService(name, url, enabled)
 
 		return myKongServer.AddService(newService, options)
-	}
 
-	if command[0] == "route" {
+	case "route":
 		const valuesDelim = ","
 		var name string
 		var protocols []string
@@ -166,7 +176,8 @@ func commandQuery(myKongServer KongServer, command []string, options Options) er
 		return err
 	}
 
-	if command[0] == "service" {
+	switch command[0] {
+	case "service":
 		var id string
 
 		for i := 1; i < len(command); i++ {
@@ -181,9 +192,8 @@ func commandQuery(myKongServer KongServer, command []string, options Options) er
 		}
 
 		return myKongServer.QueryService(id, options)
-	}
 
-	if command[0] == "route" {
+	case "route":
 		var id string
 
 		for i := 1; i < len(command); i++ {
@@ -210,11 +220,11 @@ func commandList(myKongServer KongServer, command []string, options Options) err
 		return errors.New("missing entity for command list: available entities: service, route")
 	}
 
-	if command[0] == "service" {
+	switch command[0] {
+	case "service":
 		return myKongServer.ListServices(options)
-	}
 
-	if command[0] == "route" {
+	case "route":
 		return myKongServer.ListRoutes(options)
 	}
 
@@ -249,6 +259,26 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		return err
 	}
 
+	protocolsRegEx, err := regexp.Compile(`^--protocols\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	methodsRegEx, err := regexp.Compile(`^--methods\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	pathsRegEx, err := regexp.Compile(`^--paths\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	serviceIdRegEx, err := regexp.Compile(`^--service-id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	var id string
 
 	for i := 1; i < len(command); i++ {
@@ -258,7 +288,8 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		}
 	}
 
-	if command[0] == "service" {
+	switch command[0] {
+	case "service":
 		if len(id) == 0 {
 			return errors.New("missing service id: option --id={id} required for this command")
 		}
@@ -295,15 +326,49 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		updatedService := NewKongService(name, url, enabled)
 
 		return myKongServer.UpdateService(id, updatedService, options)
-	}
 
-	//	if command[0] == "route" {
-	//		if len(id) == 0 {
-	//			return errors.New("missing route id: option --id={id} required for this command")
-	//		}
-	//
-	//		return myKongServer.DeleteRoute(id, options)
-	//	}
+	case "route":
+		if len(id) == 0 {
+			return errors.New("missing route id: option --id={id} required for this command")
+		}
+
+		const valuesDelim = ","
+		var name string
+		var protocols []string
+		var methods []string
+		var paths []string
+		var serviceId string
+
+		for i := 1; i < len(command); i++ {
+			match := nameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				name = match[0][1]
+			}
+
+			match = protocolsRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				protocols = strings.Split(match[0][1], valuesDelim)
+			}
+
+			match = methodsRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				methods = strings.Split(match[0][1], valuesDelim)
+			}
+
+			match = pathsRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				paths = strings.Split(match[0][1], valuesDelim)
+			}
+
+			match = serviceIdRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				serviceId = match[0][1]
+			}
+		}
+		updatedRoute := NewKongRoute(name, protocols, methods, paths, serviceId)
+
+		return myKongServer.UpdateRoute(id, updatedRoute, options)
+	}
 
 	return errors.New("invalid entity for command update: " + command[0])
 }
@@ -330,15 +395,15 @@ func commandDelete(myKongServer KongServer, command []string, options Options) e
 		}
 	}
 
-	if command[0] == "service" {
+	switch command[0] {
+	case "service":
 		if len(id) == 0 {
 			return errors.New("missing service id: option --id={id} required for this command")
 		}
 
 		return myKongServer.DeleteService(id, options)
-	}
 
-	if command[0] == "route" {
+	case "route":
 		if len(id) == 0 {
 			return errors.New("missing route id: option --id={id} required for this command")
 		}
