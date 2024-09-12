@@ -277,7 +277,7 @@ func (ks *KongServerDomain) UpdateService(id string, updatedKongService *KongSer
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
 		if options.verbose {
-			fmt.Printf("http response status code: %s\nnew service ID: %s\n", resp.Status, serviceResp.Id)
+			fmt.Printf("http response status code: %s\nservice ID: %s\n", resp.Status, serviceResp.Id)
 		} else {
 			fmt.Printf("%s\n", serviceResp.Id)
 		}

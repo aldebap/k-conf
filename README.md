@@ -32,8 +32,8 @@ kconf add route --name=Products --protocols=http --methods=GET,POST --paths=/api
 
 ### Features backlog (for v0.2 release)
 
-- [ ] Endpoint to update a service
-- [ ] Endpoint to update a route
+- [X] ~~Endpoint to update a service~~
+- [X] ~~Endpoint to update a route~~
 - [ ] Endpoint to add a new consumer
 - [ ] Endpoint to get a consumer
 - [ ] Endpoint to get a list of consumers
