@@ -34,7 +34,7 @@ kconf add route --name=Products --protocols=http --methods=GET,POST --paths=/api
 
 - [X] ~~Endpoint to update a service~~
 - [X] ~~Endpoint to update a route~~
-- [ ] Endpoint to add a new consumer
+- [X] ~~Endpoint to add a new consumer~~
 - [ ] Endpoint to get a consumer
 - [ ] Endpoint to get a list of consumers
 - [ ] Endpoint to update a consumer

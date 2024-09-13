@@ -328,3 +328,5 @@ func Test_DeleteService(t *testing.T) {
 		}
 	})
 }
+
+//	TODO: add test cases for update service
