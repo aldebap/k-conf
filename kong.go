@@ -29,6 +29,8 @@ type KongServer interface {
 	ListRoutes(options Options) error
 	UpdateRoute(id string, updatedKongRoute *KongRoute, options Options) error
 	DeleteRoute(id string, options Options) error
+
+	AddConsumer(newKongConsumer *KongConsumer, options Options) error
 }
 
 // Kong server attributes
@@ -59,10 +61,10 @@ func (ks *KongServerDomain) ServerURL() string {
 // check Kong status
 func (ks *KongServerDomain) CheckStatus(options Options) error {
 
-	var serviceURL string = ks.ServerURL()
+	var checkStatusURL string = ks.ServerURL()
 
 	//	send a request to Kong to check it's status
-	resp, err := http.Get(serviceURL)
+	resp, err := http.Get(checkStatusURL)
 	if err != nil {
 		return err
 	}

@@ -73,7 +73,7 @@ const (
 // add a new route to Kong
 func (ks *KongServerDomain) AddRoute(newKongRoute *KongRoute, options Options) error {
 
-	var serviceURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), routesResource)
+	var routeURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), routesResource)
 
 	payload, err := json.Marshal(KongRouteRequest{
 		Name:      newKongRoute.name,
@@ -88,7 +88,7 @@ func (ks *KongServerDomain) AddRoute(newKongRoute *KongRoute, options Options) e
 		return err
 	}
 
-	req, err := http.NewRequest("POST", serviceURL, bytes.NewBuffer([]byte(payload)))
+	req, err := http.NewRequest("POST", routeURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
 		return err
 	}
@@ -136,10 +136,10 @@ func (ks *KongServerDomain) AddRoute(newKongRoute *KongRoute, options Options) e
 // query a route by Id
 func (ks *KongServerDomain) QueryRoute(id string, options Options) error {
 
-	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
+	var routeURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
 
 	//	send a request to Kong to query the route by id
-	resp, err := http.Get(serviceURL)
+	resp, err := http.Get(routeURL)
 	if err != nil {
 		return err
 	}
@@ -184,10 +184,10 @@ func (ks *KongServerDomain) QueryRoute(id string, options Options) error {
 // list all routes
 func (ks *KongServerDomain) ListRoutes(options Options) error {
 
-	var serviceURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), routesResource)
+	var routeURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), routesResource)
 
 	//	send a request to Kong to get a list of all routes
-	resp, err := http.Get(serviceURL)
+	resp, err := http.Get(routeURL)
 	if err != nil {
 		return err
 	}
@@ -239,9 +239,9 @@ func (ks *KongServerDomain) ListRoutes(options Options) error {
 func (ks *KongServerDomain) UpdateRoute(id string, updatedKongRoute *KongRoute, options Options) error {
 
 	var (
-		serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
-		payload    []byte
-		err        error
+		routeURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
+		payload  []byte
+		err      error
 	)
 
 	if len(updatedKongRoute.serviceId) == 0 {
@@ -270,7 +270,7 @@ func (ks *KongServerDomain) UpdateRoute(id string, updatedKongRoute *KongRoute, 
 
 	log.Printf("[debug] patch payload: %s", payload)
 
-	req, err := http.NewRequest("PATCH", serviceURL, bytes.NewBuffer([]byte(payload)))
+	req, err := http.NewRequest("PATCH", routeURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
 		return err
 	}
@@ -318,10 +318,10 @@ func (ks *KongServerDomain) UpdateRoute(id string, updatedKongRoute *KongRoute, 
 // delete a route by Id
 func (ks *KongServerDomain) DeleteRoute(id string, options Options) error {
 
-	var serviceURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
+	var routeURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), routesResource, id)
 
 	//	send a request to Kong to delete the route by id
-	req, err := http.NewRequest("DELETE", serviceURL, bytes.NewBuffer([]byte("")))
+	req, err := http.NewRequest("DELETE", routeURL, bytes.NewBuffer([]byte("")))
 	if err != nil {
 		return err
 	}
