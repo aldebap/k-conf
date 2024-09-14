@@ -1,7 +1,7 @@
 #!  /usr/bin/ksh
 
-#   test scenatio #04.5
-export TEST_SCENARIO='04.5'
+#   test scenatio #04.6
+export TEST_SCENARIO='04.6'
 export DESCRIPTION='command query route without parameters'
 
 export TARGET_OPTIONS='query route'
