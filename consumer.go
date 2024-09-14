@@ -109,3 +109,51 @@ func (ks *KongServerDomain) AddConsumer(newKongConsumer *KongConsumer, options O
 
 	return nil
 }
+
+// query a consumer by Id
+func (ks *KongServerDomain) QueryConsumer(id string, options Options) error {
+
+	var consumerURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), consumersResource, id)
+
+	//	send a request to Kong to query the service by id
+	resp, err := http.Get(consumerURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("consumer not found")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending query consumer command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var consumerResp KongConsumerResponse
+
+		err = json.Unmarshal(respPayload, &consumerResp)
+		if err != nil {
+			return err
+		}
+
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nconsumer: %s --> %s (%s)\n", resp.Status,
+				consumerResp.CustomId, consumerResp.UserName, consumerResp.Tags)
+		} else {
+			fmt.Printf("consumer: %s --> %s (%s)\n",
+				consumerResp.CustomId, consumerResp.UserName, consumerResp.Tags)
+		}
+	}
+
+	return nil
+}

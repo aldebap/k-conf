@@ -31,6 +31,7 @@ type KongServer interface {
 	DeleteRoute(id string, options Options) error
 
 	AddConsumer(newKongConsumer *KongConsumer, options Options) error
+	QueryConsumer(id string, options Options) error
 }
 
 // Kong server attributes

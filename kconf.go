@@ -249,6 +249,22 @@ func commandQuery(myKongServer KongServer, command []string, options Options) er
 		}
 
 		return myKongServer.QueryRoute(id, options)
+
+	case "consumer":
+		var id string
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+		}
+
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		return myKongServer.QueryConsumer(id, options)
 	}
 
 	return errors.New("invalid entity for command query: " + command[0])
