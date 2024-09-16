@@ -30,15 +30,37 @@ kconf add service --name=Products --url=http://localhost:8080/api/v1/products
 kconf add route --name=Products --protocols=http --methods=GET,POST --paths=/api/v1/products --service-id=27168276282768
 ```
 
+```sh
+kconf add consumer --custom-id=auth-consumer --user-name=guest --tags=silver-tier
+```
+
+### Features backlog (for v0.3 release)
+
+- [ ] Endpoint to add a new upstream
+- [ ] Endpoint to get a upstream
+- [ ] Endpoint to get a list of upstreams
+- [ ] Endpoint to update a upstream
+- [ ] Endpoint to delete a upstream
+- [ ] Endpoint to add a new target
+- [ ] Endpoint to get a target
+- [ ] Endpoint to get a list of targets
+- [ ] Endpoint to update a target
+- [ ] Endpoint to delete a target
+
 ### Features backlog (for v0.2 release)
 
 - [X] ~~Endpoint to update a service~~
 - [X] ~~Endpoint to update a route~~
 - [X] ~~Endpoint to add a new consumer~~
-- [ ] Endpoint to get a consumer
-- [ ] Endpoint to get a list of consumers
+- [X] ~~Endpoint to get a consumer~~
+- [X] ~~Endpoint to get a list of consumers~~
 - [ ] Endpoint to update a consumer
 - [ ] Endpoint to delete a consumer
+- [ ] Endpoint to add a new pluging for a consumer
+- [ ] Endpoint to get a pluging for a consumer
+- [ ] Endpoint to get a list of plugings for a consumer
+- [ ] Endpoint to update a pluging for a consumer
+- [ ] Endpoint to delete a pluging for a consumer
 
 ### Features backlog (for v0.1 release)
 

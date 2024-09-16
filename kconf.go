@@ -283,6 +283,9 @@ func commandList(myKongServer KongServer, command []string, options Options) err
 
 	case "route":
 		return myKongServer.ListRoutes(options)
+
+	case "consumer":
+		return myKongServer.ListConsumers(options)
 	}
 
 	return errors.New("invalid entity for command list: " + command[0])
