@@ -47,6 +47,12 @@ type KongConsumerResponse struct {
 	Tags     []string `json:"tags"`
 }
 
+// kong consumer list response payload
+type KongConsumerListResponse struct {
+	Data []KongConsumerResponse `json:"data"`
+	Next string                 `json:"next"`
+}
+
 const (
 	consumersResource string = "consumers"
 )
@@ -152,6 +158,61 @@ func (ks *KongServerDomain) QueryConsumer(id string, options Options) error {
 		} else {
 			fmt.Printf("consumer: %s --> %s (%s)\n",
 				consumerResp.CustomId, consumerResp.UserName, consumerResp.Tags)
+		}
+	}
+
+	return nil
+}
+
+// query a consumer by Id
+func (ks *KongServerDomain) ListConsumers(options Options) error {
+
+	var consumerURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), consumersResource)
+
+	//	send a request to Kong to get a list of all consumers
+	resp, err := http.Get(consumerURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending list consumers command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var consumerListResp KongConsumerListResponse
+
+		err = json.Unmarshal(respPayload, &consumerListResp)
+		if err != nil {
+			return err
+		}
+
+		if len(consumerListResp.Data) == 0 {
+			if options.verbose {
+				fmt.Printf("%s\nNo consumers\n", resp.Status)
+			} else {
+				fmt.Printf("No consumers\n")
+			}
+
+			return nil
+		}
+
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nconsumer list\n", resp.Status)
+		}
+
+		for _, consumer := range consumerListResp.Data {
+			fmt.Printf("consumer: %s --> %s (%s)\n",
+				consumer.CustomId, consumer.UserName, consumer.Tags)
 		}
 	}
 

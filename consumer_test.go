@@ -74,3 +74,5 @@ func Test_AddConsumer(t *testing.T) {
 		}
 	})
 }
+
+//	TODO: add missing test cases
