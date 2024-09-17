@@ -218,3 +218,70 @@ func (ks *KongServerDomain) ListConsumers(options Options) error {
 
 	return nil
 }
+
+// update a consumer in Kong
+func (ks *KongServerDomain) UpdateConsumer(id string, updatedKongConsumer *KongConsumer, options Options) error {
+
+	var consumerURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), consumersResource, id)
+
+	payload, err := json.Marshal(KongConsumerRequest{
+		CustomId: updatedKongConsumer.customId,
+		UserName: updatedKongConsumer.userName,
+		Tags:     updatedKongConsumer.tags,
+	})
+	if err != nil {
+		return err
+	}
+
+	//	log.Printf("[debug] patch payload: %s", payload)
+
+	req, err := http.NewRequest("PATCH", consumerURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("consumer not found")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending patch consumer command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var consumerResp KongConsumerResponse
+
+	err = json.Unmarshal(respPayload, &consumerResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nconsumer: %s --> %s (%s)\n", resp.Status,
+				consumerResp.CustomId, consumerResp.UserName, consumerResp.Tags)
+		} else {
+			fmt.Printf("consumer: %s --> %s (%s)\n",
+				consumerResp.CustomId, consumerResp.UserName, consumerResp.Tags)
+		}
+	}
+
+	return nil
+}

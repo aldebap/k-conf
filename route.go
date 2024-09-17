@@ -12,7 +12,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -268,7 +267,7 @@ func (ks *KongServerDomain) UpdateRoute(id string, updatedKongRoute *KongRoute, 
 		return err
 	}
 
-	log.Printf("[debug] patch payload: %s", payload)
+	//	log.Printf("[debug] patch payload: %s", payload)
 
 	req, err := http.NewRequest("PATCH", routeURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
@@ -282,6 +281,10 @@ func (ks *KongServerDomain) UpdateRoute(id string, updatedKongRoute *KongRoute, 
 		return err
 	}
 	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("route not found")
+	}
 
 	if resp.StatusCode != http.StatusOK {
 		return errors.New("fail sending patch service command to Kong: " + resp.Status)
