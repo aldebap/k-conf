@@ -254,6 +254,10 @@ func (ks *KongServerDomain) UpdateService(id string, updatedKongService *KongSer
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("service not found")
+	}
+
 	if resp.StatusCode != http.StatusOK {
 		return errors.New("fail sending patch service command to Kong: " + resp.Status)
 	}

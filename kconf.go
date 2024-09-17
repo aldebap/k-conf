@@ -339,6 +339,21 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		return err
 	}
 
+	customIdRegEx, err := regexp.Compile(`^--custom-id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	userNameRegEx, err := regexp.Compile(`^--user-name\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	tagsRegEx, err := regexp.Compile(`^--tags\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	var id string
 
 	for i := 1; i < len(command); i++ {
@@ -428,6 +443,36 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		updatedRoute := NewKongRoute(name, protocols, methods, paths, serviceId)
 
 		return myKongServer.UpdateRoute(id, updatedRoute, options)
+
+	case "consumer":
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		const valuesDelim = ","
+		var customId string
+		var userName string
+		var tags []string
+
+		for i := 1; i < len(command); i++ {
+			match := customIdRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				customId = match[0][1]
+			}
+
+			match = userNameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				userName = match[0][1]
+			}
+
+			match = tagsRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				tags = strings.Split(match[0][1], valuesDelim)
+			}
+		}
+		updatedKongConsumer := NewKongConsumer(customId, userName, tags)
+
+		return myKongServer.UpdateConsumer(id, updatedKongConsumer, options)
 	}
 
 	return errors.New("invalid entity for command update: " + command[0])

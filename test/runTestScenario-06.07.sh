@@ -1,7 +1,7 @@
 #!  /usr/bin/ksh
 
-#   test scenatio #06.6
-export TEST_SCENARIO='06.6'
+#   test scenatio #06.7
+export TEST_SCENARIO='06.7'
 export DESCRIPTION='command update route without parameters'
 
 export TARGET_OPTIONS='update route'

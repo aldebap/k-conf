@@ -54,7 +54,7 @@ kconf add consumer --custom-id=auth-consumer --user-name=guest --tags=silver-tie
 - [X] ~~Endpoint to add a new consumer~~
 - [X] ~~Endpoint to get a consumer~~
 - [X] ~~Endpoint to get a list of consumers~~
-- [ ] Endpoint to update a consumer
+- [X] ~~Endpoint to update a consumer~~
 - [ ] Endpoint to delete a consumer
 - [ ] Endpoint to add a new pluging for a consumer
 - [ ] Endpoint to get a pluging for a consumer
