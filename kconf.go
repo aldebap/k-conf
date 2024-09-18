@@ -514,6 +514,13 @@ func commandDelete(myKongServer KongServer, command []string, options Options) e
 		}
 
 		return myKongServer.DeleteRoute(id, options)
+
+	case "consumer":
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		return myKongServer.DeleteConsumer(id, options)
 	}
 
 	return errors.New("invalid entity for command delete: " + command[0])
