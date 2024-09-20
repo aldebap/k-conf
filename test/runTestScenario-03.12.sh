@@ -11,4 +11,4 @@ export EXPECTED_RESULT_TYPE='regex_id'
 
 performFunctionalTestScenario
 
-export CUSTOMER_GUID="${REGEX_RESULT}"
+export PLUGIN_GUID="${REGEX_RESULT}"

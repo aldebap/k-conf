@@ -235,7 +235,7 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 				}
 			}
 		}
-		newKongPlugin := NewKongPlugin(name, routeId, nil, enabled)
+		newKongPlugin := NewKongPlugin(name, routeId, []KongPluginConfig{}, enabled)
 
 		return myKongServer.AddPlugin(newKongPlugin, options)
 	}

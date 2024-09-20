@@ -25,7 +25,7 @@ type KongPluginConfig struct {
 type KongPlugin struct {
 	instanceName string
 	name         string
-	route        string
+	routeId      string
 	service      string
 	consumer     string
 	config       []KongPluginConfig
@@ -35,21 +35,26 @@ type KongPlugin struct {
 }
 
 // create a new Kong plugin
-func NewKongPlugin(name string, route string, config []KongPluginConfig, enabled bool) *KongPlugin {
+func NewKongPlugin(name string, routeId string, config []KongPluginConfig, enabled bool) *KongPlugin {
 
 	return &KongPlugin{
 		name:    name,
-		route:   route,
+		routeId: routeId,
 		config:  config,
 		enabled: enabled,
 	}
 }
 
+// kong plugin Id payload
+type KongPluginEntityId struct {
+	Id string `json:"id"`
+}
+
 // kong plugin request payload
 type KongPluginRequest struct {
-	Name    string `json:"name,omitempty"`
-	Route   string `json:"route,omitempty"`
-	Enabled bool   `json:"enabled"`
+	Name    string             `json:"name,omitempty"`
+	Route   KongPluginEntityId `json:"route,omitempty"`
+	Enabled bool               `json:"enabled"`
 }
 
 // kong plugin response payload
@@ -73,13 +78,17 @@ func (ks *KongServerDomain) AddPlugin(newKongPlugin *KongPlugin, options Options
 	var pluginURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), pluginsResource)
 
 	payload, err := json.Marshal(KongPluginRequest{
-		Name:    newKongPlugin.name,
-		Route:   newKongPlugin.route,
+		Name: newKongPlugin.name,
+		Route: KongPluginEntityId{
+			Id: newKongPlugin.routeId,
+		},
 		Enabled: newKongPlugin.enabled,
 	})
 	if err != nil {
 		return err
 	}
+
+	//log.Printf("[debug] post payload: %s\n", payload)
 
 	req, err := http.NewRequest("POST", pluginURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
