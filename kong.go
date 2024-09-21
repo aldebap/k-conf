@@ -37,6 +37,7 @@ type KongServer interface {
 	DeleteConsumer(id string, options Options) error
 
 	AddPlugin(newKongPlugin *KongPlugin, options Options) error
+	QueryPlugin(id string, options Options) error
 }
 
 // Kong server attributes

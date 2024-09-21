@@ -304,6 +304,22 @@ func commandQuery(myKongServer KongServer, command []string, options Options) er
 		}
 
 		return myKongServer.QueryConsumer(id, options)
+
+	case "plugin":
+		var id string
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+		}
+
+		if len(id) == 0 {
+			return errors.New("missing plugin id: option --id={id} required for this command")
+		}
+
+		return myKongServer.QueryPlugin(id, options)
 	}
 
 	return errors.New("invalid entity for command query: " + command[0])
