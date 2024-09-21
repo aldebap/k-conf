@@ -59,8 +59,31 @@ type KongPluginRequest struct {
 
 // kong plugin response payload
 type KongPluginResponse struct {
-	Id string `json:"id"`
+	Id           string             `json:"id"`
+	Name         string             `json:"name"`
+	InstanceName string             `json:"instance_name"`
+	Protocols    []string           `json:"protocols"`
+	Service      KongPluginEntityId `json:"service,omitempty"`
+	Route        KongPluginEntityId `json:"route,omitempty"`
+	Consumer     KongPluginEntityId `json:"consumer,omitempty"`
+	Tags         string             `json:"tags"`
+	CreatedAt    uint64             `json:"created_at"`
+	UpdatedAt    uint64             `json:"updated_at"`
+	Ordering     string             `json:"ordering"`
+	Enabled      bool               `json:"enabled"`
 }
+
+//    "config": {
+//        "hide_credentials": false,
+//        "key_in_query": true,
+//        "key_in_header": true,
+//        "key_in_body": false,
+//        "anonymous": null,
+//        "run_on_preflight": true,
+//        "key_names": [
+//            "apikey"
+//        ]
+//    }
 
 // kong plugin list response payload
 type KongPluginListResponse struct {
@@ -133,4 +156,53 @@ func (ks *KongServerDomain) AddPlugin(newKongPlugin *KongPlugin, options Options
 	}
 
 	return nil
+}
+
+// query a plugin by Id
+func (ks *KongServerDomain) QueryPlugin(id string, options Options) error {
+
+	var pluginURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), pluginsResource, id)
+
+	//	send a request to Kong to query the plugin by id
+	resp, err := http.Get(pluginURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("plugin not found")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending query plugin command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var pluginResp KongPluginResponse
+
+		err = json.Unmarshal(respPayload, &pluginResp)
+		if err != nil {
+			return err
+		}
+
+		if options.verbose {
+			fmt.Printf("http response status code: %s\n%s: %s - %s: serviceId: %s ; routeId: %s ; consumerId: %s\n", resp.Status,
+				pluginResp.Id, pluginResp.Name, pluginResp.Protocols, pluginResp.Service.Id, pluginResp.Route.Id, pluginResp.Consumer.Id)
+		} else {
+			fmt.Printf("%s: %s - %s: serviceId: %s ; routeId: %s ; consumerId: %s\n",
+				pluginResp.Id, pluginResp.Name, pluginResp.Protocols, pluginResp.Service.Id, pluginResp.Route.Id, pluginResp.Consumer.Id)
+		}
+	}
+
+	return nil
+
 }

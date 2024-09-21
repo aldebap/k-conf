@@ -1,19 +1,29 @@
 #!  /usr/bin/ksh
 
-./bin/kconf -help
+export  OUTPUT=smokeTest.out
+export  ERROR=smokeTest.err
 
 ./bin/kconf status
 
 #   services
-./bin/kconf add service --name=Produtos --url=http://192.168.68.107:8080/api/v1/produto
+./bin/kconf add service --name=Consulta-Bin --url=https://api.pagar.me/bin/v1 > ${OUTPUT} 2> ${ERROR}
 
-./bin/kconf query service --id=86e5be98-39fe-4035-b182-afc63553a027
+export SERVICE_GUID=$( cat ${OUTPUT} )
 
-./bin/kconf list service
+echo "service ${SERVICE_GUID} created"
 
 #   routes
-./bin/kconf add route --name=Produto --protocols=http --methods=GET,POST --paths=/gwa/v1/produtos --service-id=86e5be98-39fe-4035-b182-afc63553a027
+./bin/kconf add route --name=Consulta-Bin --protocols=http --methods=GET --paths=/api/v1/bin/499577 --service-id=${SERVICE_GUID} > ${OUTPUT} 2> ${ERROR}
 
-./bin/kconf query route --id=3cb55349-1f3c-45da-9461-4457a7351ab6
+export ROUTE_GUID=$( cat ${OUTPUT} )
 
-./bin/kconf list route
+echo "route ${ROUTE_GUID} created"
+
+#   key-auth plugin
+./bin/kconf -verbose add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
+
+#   clean up
+#./bin/kconf delete route --id=${ROUTE_GUID}
+#./bin/kconf delete service --id=${SERVICE_GUID}
+
+rm -f ${OUTPUT} ${ERROR}
