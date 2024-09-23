@@ -38,6 +38,7 @@ type KongServer interface {
 
 	AddPlugin(newKongPlugin *KongPlugin, options Options) error
 	QueryPlugin(id string, options Options) error
+	ListPlugins(options Options) error
 }
 
 // Kong server attributes
