@@ -206,3 +206,58 @@ func (ks *KongServerDomain) QueryPlugin(id string, options Options) error {
 	return nil
 
 }
+
+// query a plugin by Id
+func (ks *KongServerDomain) ListPlugins(options Options) error {
+
+	var pluginURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), pluginsResource)
+
+	//	send a request to Kong to get a list of all plugins
+	resp, err := http.Get(pluginURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending list plugins command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var pluginListResp KongPluginListResponse
+
+		err = json.Unmarshal(respPayload, &pluginListResp)
+		if err != nil {
+			return err
+		}
+
+		if len(pluginListResp.Data) == 0 {
+			if options.verbose {
+				fmt.Printf("%s\nNo plugins\n", resp.Status)
+			} else {
+				fmt.Printf("No plugins\n")
+			}
+
+			return nil
+		}
+
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nplugin list\n", resp.Status)
+		}
+
+		for _, plugin := range pluginListResp.Data {
+			fmt.Printf("plugin: %s: %s - %s: serviceId: %s ; routeId: %s ; consumerId: %s\n",
+				plugin.Id, plugin.Name, plugin.Protocols, plugin.Service.Id, plugin.Route.Id, plugin.Consumer.Id)
+		}
+	}
+
+	return nil
+}

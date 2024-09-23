@@ -56,11 +56,16 @@ kconf add consumer --custom-id=auth-consumer --user-name=guest --tags=silver-tie
 - [X] ~~Endpoint to get a list of consumers~~
 - [X] ~~Endpoint to update a consumer~~
 - [X] ~~Endpoint to delete a consumer~~
-- [ ] Endpoint to add a new pluging for a consumer
-- [ ] Endpoint to get a pluging for a consumer
-- [ ] Endpoint to get a list of plugings for a consumer
-- [ ] Endpoint to update a pluging for a consumer
-- [ ] Endpoint to delete a pluging for a consumer
+- [X] ~~Endpoint to add a new pluging~~
+- [X] ~~Endpoint to get a pluging~~
+- [X] ~~Endpoint to get a list of plugings~~
+- [ ] Endpoint to update a pluging
+- [ ] Endpoint to delete a pluging
+- [ ] Endpoint to add a Basic Auth pluging for a consumer
+- [ ] Endpoint to add a JWT pluging for a consumer
+- [ ] Endpoint to add a Key Auth pluging for a consumer
+- [ ] Endpoint to add a LDAP pluging for a consumer
+- [ ] Endpoint to add a OAuth2 pluging for a consumer
 
 ### Features backlog (for v0.1 release)
 
