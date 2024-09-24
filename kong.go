@@ -40,6 +40,7 @@ type KongServer interface {
 	QueryPlugin(id string, options Options) error
 	ListPlugins(options Options) error
 	UpdatePlugin(id string, updatedKongPlugin *KongPlugin, options Options) error
+	DeletePlugin(id string, options Options) error
 }
 
 // Kong server attributes

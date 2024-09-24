@@ -334,3 +334,37 @@ func (ks *KongServerDomain) UpdatePlugin(id string, updatedKongPlugin *KongPlugi
 
 	return nil
 }
+
+// delete a plugin in Kong
+func (ks *KongServerDomain) DeletePlugin(id string, options Options) error {
+
+	var pluginURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), pluginsResource, id)
+
+	//	send a request to Kong to delete the plugin by id
+	req, err := http.NewRequest("DELETE", pluginURL, bytes.NewBuffer([]byte("")))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New("fail sending delete plugin command to Kong: " + resp.Status)
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n{}\n", resp.Status)
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\n", resp.Status)
+		}
+	}
+
+	return nil
+}

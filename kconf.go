@@ -617,6 +617,13 @@ func commandDelete(myKongServer KongServer, command []string, options Options) e
 		}
 
 		return myKongServer.DeleteConsumer(id, options)
+
+	case "plugin":
+		if len(id) == 0 {
+			return errors.New("missing plugin id: option --id={id} required for this command")
+		}
+
+		return myKongServer.DeletePlugin(id, options)
 	}
 
 	return errors.New("invalid entity for command delete: " + command[0])
