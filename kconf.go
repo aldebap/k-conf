@@ -412,6 +412,11 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		return err
 	}
 
+	routeIdRegEx, err := regexp.Compile(`^--route-id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	var id string
 
 	for i := 1; i < len(command); i++ {
@@ -531,6 +536,39 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		updatedKongConsumer := NewKongConsumer(customId, userName, tags)
 
 		return myKongServer.UpdateConsumer(id, updatedKongConsumer, options)
+
+	case "plugin":
+		if len(id) == 0 {
+			return errors.New("missing plugin id: option --id={id} required for this command")
+		}
+
+		var routeId string
+		var enabled bool = true
+
+		for i := 1; i < len(command); i++ {
+
+			match := routeIdRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				routeId = match[0][1]
+			}
+
+			match = enabledRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				switch match[0][1] {
+				case "false":
+					enabled = false
+
+				case "true":
+					enabled = true
+
+				default:
+					return errors.New("wrong value for option --enabled: " + match[0][1])
+				}
+			}
+		}
+		updatedKongPlugin := NewKongPlugin("", routeId, nil, enabled)
+
+		return myKongServer.UpdatePlugin(id, updatedKongPlugin, options)
 	}
 
 	return errors.New("invalid entity for command update: " + command[0])

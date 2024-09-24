@@ -27,11 +27,15 @@ kconf add service --name=Products --url=http://localhost:8080/api/v1/products
 ```
 
 ```sh
-kconf add route --name=Products --protocols=http --methods=GET,POST --paths=/api/v1/products --service-id=27168276282768
+kconf add route --name=Products --protocols=http --methods=GET,POST --paths=/api/v1/products --service-id=${SERVICE_GUID}
 ```
 
 ```sh
 kconf add consumer --custom-id=auth-consumer --user-name=guest --tags=silver-tier
+```
+
+```sh
+kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 ```
 
 ### Features backlog (for v0.3 release)
@@ -59,13 +63,16 @@ kconf add consumer --custom-id=auth-consumer --user-name=guest --tags=silver-tie
 - [X] ~~Endpoint to add a new pluging~~
 - [X] ~~Endpoint to get a pluging~~
 - [X] ~~Endpoint to get a list of plugings~~
-- [ ] Endpoint to update a pluging
+- [X] ~~Endpoint to update a pluging~~
 - [ ] Endpoint to delete a pluging
+- [ ] Add parameter to Add Plugin command to set the service id
+- [ ] Add parameter to Add Plugin command to specify plugin config
 - [ ] Endpoint to add a Basic Auth pluging for a consumer
 - [ ] Endpoint to add a JWT pluging for a consumer
 - [ ] Endpoint to add a Key Auth pluging for a consumer
 - [ ] Endpoint to add a LDAP pluging for a consumer
 - [ ] Endpoint to add a OAuth2 pluging for a consumer
+- [ ] Add missing unit tests
 
 ### Features backlog (for v0.1 release)
 

@@ -47,14 +47,14 @@ func NewKongPlugin(name string, routeId string, config []KongPluginConfig, enabl
 
 // kong plugin Id payload
 type KongPluginEntityId struct {
-	Id string `json:"id"`
+	Id string `json:"id,omitempty"`
 }
 
 // kong plugin request payload
 type KongPluginRequest struct {
-	Name    string             `json:"name,omitempty"`
-	Route   KongPluginEntityId `json:"route,omitempty"`
-	Enabled bool               `json:"enabled"`
+	Name    string              `json:"name,omitempty"`
+	Route   *KongPluginEntityId `json:"route,omitempty"`
+	Enabled bool                `json:"enabled"`
 }
 
 // kong plugin response payload
@@ -102,7 +102,7 @@ func (ks *KongServerDomain) AddPlugin(newKongPlugin *KongPlugin, options Options
 
 	payload, err := json.Marshal(KongPluginRequest{
 		Name: newKongPlugin.name,
-		Route: KongPluginEntityId{
+		Route: &KongPluginEntityId{
 			Id: newKongPlugin.routeId,
 		},
 		Enabled: newKongPlugin.enabled,
@@ -204,7 +204,6 @@ func (ks *KongServerDomain) QueryPlugin(id string, options Options) error {
 	}
 
 	return nil
-
 }
 
 // query a plugin by Id
@@ -256,6 +255,80 @@ func (ks *KongServerDomain) ListPlugins(options Options) error {
 		for _, plugin := range pluginListResp.Data {
 			fmt.Printf("plugin: %s: %s - %s: serviceId: %s ; routeId: %s ; consumerId: %s\n",
 				plugin.Id, plugin.Name, plugin.Protocols, plugin.Service.Id, plugin.Route.Id, plugin.Consumer.Id)
+		}
+	}
+
+	return nil
+}
+
+// update a plugin in Kong
+func (ks *KongServerDomain) UpdatePlugin(id string, updatedKongPlugin *KongPlugin, options Options) error {
+
+	var pluginURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), pluginsResource, id)
+
+	pluginReq := KongPluginRequest{
+		Name:    updatedKongPlugin.name,
+		Enabled: updatedKongPlugin.enabled,
+	}
+	if len(updatedKongPlugin.routeId) > 0 {
+
+		pluginReq.Route = &KongPluginEntityId{
+			Id: updatedKongPlugin.routeId,
+		}
+	}
+
+	payload, err := json.Marshal(pluginReq)
+	if err != nil {
+		return err
+	}
+
+	//	log.Printf("[debug] patch payload: %s", payload)
+
+	req, err := http.NewRequest("PATCH", pluginURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("plugin not found")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending patch plugin command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var pluginResp KongPluginResponse
+
+	err = json.Unmarshal(respPayload, &pluginResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\n%s: %s - %s: serviceId: %s ; routeId: %s ; consumerId: %s\n", resp.Status,
+				pluginResp.Id, pluginResp.Name, pluginResp.Protocols, pluginResp.Service.Id, pluginResp.Route.Id, pluginResp.Consumer.Id)
+		} else {
+			fmt.Printf("%s: %s - %s: serviceId: %s ; routeId: %s ; consumerId: %s\n",
+				pluginResp.Id, pluginResp.Name, pluginResp.Protocols, pluginResp.Service.Id, pluginResp.Route.Id, pluginResp.Consumer.Id)
 		}
 	}
 
