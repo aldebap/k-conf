@@ -36,6 +36,8 @@ type KongServer interface {
 	UpdateConsumer(id string, updatedKongConsumer *KongConsumer, options Options) error
 	DeleteConsumer(id string, options Options) error
 
+	AddConsumerBasicAuth(id string, newKongBasicAuthConfig *KongBasicAuthConfig, options Options) error
+
 	AddPlugin(newKongPlugin *KongPlugin, options Options) error
 	QueryPlugin(id string, options Options) error
 	ListPlugins(options Options) error

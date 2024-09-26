@@ -106,6 +106,16 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		return err
 	}
 
+	idRegEx, err := regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	passwordRegEx, err := regexp.Compile(`^--password\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	switch command[0] {
 	case "service":
 		var name string
@@ -204,6 +214,35 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		newKongConsumer := NewKongConsumer(customId, userName, tags)
 
 		return myKongServer.AddConsumer(newKongConsumer, options)
+
+	case "consumer-basic-auth":
+		var id string
+		var userName string
+		var password string
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+
+			match = userNameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				userName = match[0][1]
+			}
+
+			match = passwordRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				password = match[0][1]
+			}
+		}
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		newKongBasicAuthConfig := NewKongBasicAuthConfig(userName, password)
+
+		return myKongServer.AddConsumerBasicAuth(id, newKongBasicAuthConfig, options)
 
 	case "plugin":
 		var name string

@@ -64,10 +64,10 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 - [X] ~~Endpoint to get a pluging~~
 - [X] ~~Endpoint to get a list of plugings~~
 - [X] ~~Endpoint to update a pluging~~
-- [ ] Endpoint to delete a pluging
+- [X] ~~Endpoint to delete a pluging~~
 - [ ] Add parameter to Add Plugin command to set the service id
 - [ ] Add parameter to Add Plugin command to specify plugin config
-- [ ] Endpoint to add a Basic Auth pluging for a consumer
+- [X] ~~Endpoint to add a Basic Auth pluging for a consumer~~
 - [ ] Endpoint to add a JWT pluging for a consumer
 - [ ] Endpoint to add a Key Auth pluging for a consumer
 - [ ] Endpoint to add a LDAP pluging for a consumer

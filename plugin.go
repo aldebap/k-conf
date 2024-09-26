@@ -93,6 +93,8 @@ type KongPluginListResponse struct {
 
 const (
 	pluginsResource string = "plugins"
+
+	basicAuthPlugins string = "basic-auth"
 )
 
 // add a new plugin to Kong
