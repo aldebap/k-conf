@@ -211,7 +211,7 @@ func (ks *KongServerDomain) ListConsumers(options Options) error {
 		}
 
 		for _, consumer := range consumerListResp.Data {
-			fmt.Printf("consumer: %s --> %s (%s)\n",
+			fmt.Printf("%s: (%s) %s %s\n", consumer.Id,
 				consumer.CustomId, consumer.UserName, consumer.Tags)
 		}
 	}
