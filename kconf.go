@@ -9,14 +9,121 @@ package main
 import (
 	"errors"
 	"regexp"
+	"strconv"
 	"strings"
 )
+
+var (
+	nameRegEx      *regexp.Regexp
+	urlRegEx       *regexp.Regexp
+	enabledRegEx   *regexp.Regexp
+	protocolsRegEx *regexp.Regexp
+	methodsRegEx   *regexp.Regexp
+	pathsRegEx     *regexp.Regexp
+	serviceIdRegEx *regexp.Regexp
+	customIdRegEx  *regexp.Regexp
+	userNameRegEx  *regexp.Regexp
+	tagsRegEx      *regexp.Regexp
+	routeIdRegEx   *regexp.Regexp
+	idRegEx        *regexp.Regexp
+	passwordRegEx  *regexp.Regexp
+	keyRegEx       *regexp.Regexp
+	ttlRegEx       *regexp.Regexp
+)
+
+func compileRegExp() error {
+
+	var err error
+
+	//	compile all regex required to extract parameters for command add
+	nameRegEx, err = regexp.Compile(`^--name\s*=\s*(\S+)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	urlRegEx, err = regexp.Compile(`^--url\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	enabledRegEx, err = regexp.Compile(`^--enabled\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	protocolsRegEx, err = regexp.Compile(`^--protocols\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	methodsRegEx, err = regexp.Compile(`^--methods\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	pathsRegEx, err = regexp.Compile(`^--paths\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	serviceIdRegEx, err = regexp.Compile(`^--service-id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	customIdRegEx, err = regexp.Compile(`^--custom-id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	userNameRegEx, err = regexp.Compile(`^--user-name\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	tagsRegEx, err = regexp.Compile(`^--tags\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	routeIdRegEx, err = regexp.Compile(`^--route-id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	idRegEx, err = regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	passwordRegEx, err = regexp.Compile(`^--password\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	keyRegEx, err = regexp.Compile(`^--key\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	ttlRegEx, err = regexp.Compile(`^--ttl\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 // kconf utility
 func kconf(myKongServer KongServer, command []string, options Options) error {
 
 	if len(command) == 0 {
 		return errors.New("missing command: available commands: status, add, query, list")
+	}
+
+	err := compileRegExp()
+	if err != nil {
+		return errors.New("internal error compiling regexp: " + err.Error())
 	}
 
 	//	command to get Kong status
@@ -48,72 +155,6 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 
 	if len(command) == 0 {
 		return errors.New("missing entity for command add: available entities: service, route")
-	}
-
-	//	compile all regex required to extract parameters for command add
-	nameRegEx, err := regexp.Compile(`^--name\s*=\s*(\S+)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	urlRegEx, err := regexp.Compile(`^--url\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	enabledRegEx, err := regexp.Compile(`^--enabled\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	protocolsRegEx, err := regexp.Compile(`^--protocols\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	methodsRegEx, err := regexp.Compile(`^--methods\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	pathsRegEx, err := regexp.Compile(`^--paths\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	serviceIdRegEx, err := regexp.Compile(`^--service-id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	customIdRegEx, err := regexp.Compile(`^--custom-id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	userNameRegEx, err := regexp.Compile(`^--user-name\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	tagsRegEx, err := regexp.Compile(`^--tags\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	routeIdRegEx, err := regexp.Compile(`^--route-id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	idRegEx, err := regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	passwordRegEx, err := regexp.Compile(`^--password\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
 	}
 
 	switch command[0] {
@@ -244,6 +285,39 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 
 		return myKongServer.AddConsumerBasicAuth(id, newKongBasicAuthConfig, options)
 
+	case "consumer-key-auth":
+		var id string
+		var key string
+		var ttl int
+		var err error
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+
+			match = keyRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				key = match[0][1]
+			}
+
+			match = ttlRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				ttl, err = strconv.Atoi(match[0][1])
+				if err != nil {
+					return errors.New("Value for option --ttl must be an integer: " + err.Error())
+				}
+			}
+		}
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		newKongKeyAuthConfig := NewKongKeyAuthConfig(key, int64(ttl))
+
+		return myKongServer.AddConsumerKeyAuth(id, newKongKeyAuthConfig, options)
+
 	case "plugin":
 		var name string
 		var routeId string
@@ -287,12 +361,6 @@ func commandQuery(myKongServer KongServer, command []string, options Options) er
 
 	if len(command) == 0 {
 		return errors.New("missing entity for command query: available entities: service, route")
-	}
-
-	//	compile all regex required to extract parameters for command query
-	idRegEx, err := regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
 	}
 
 	switch command[0] {
@@ -393,67 +461,6 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 
 	if len(command) == 0 {
 		return errors.New("missing entity for command update: available entities: service, route")
-	}
-
-	//	compile all regex required to extract parameters for command update
-	idRegEx, err := regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	nameRegEx, err := regexp.Compile(`^--name\s*=\s*(\S+)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	urlRegEx, err := regexp.Compile(`^--url\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	enabledRegEx, err := regexp.Compile(`^--enabled\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	protocolsRegEx, err := regexp.Compile(`^--protocols\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	methodsRegEx, err := regexp.Compile(`^--methods\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	pathsRegEx, err := regexp.Compile(`^--paths\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	serviceIdRegEx, err := regexp.Compile(`^--service-id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	customIdRegEx, err := regexp.Compile(`^--custom-id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	userNameRegEx, err := regexp.Compile(`^--user-name\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	tagsRegEx, err := regexp.Compile(`^--tags\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
-	}
-
-	routeIdRegEx, err := regexp.Compile(`^--route-id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
 	}
 
 	var id string
@@ -618,12 +625,6 @@ func commandDelete(myKongServer KongServer, command []string, options Options) e
 
 	if len(command) == 0 {
 		return errors.New("missing entity for command delete: available entities: service, route")
-	}
-
-	//	compile all regex required to extract parameters for command delete
-	idRegEx, err := regexp.Compile(`^--id\s*=\s*(\S.*)\s*$`)
-	if err != nil {
-		return err
 	}
 
 	var id string

@@ -38,6 +38,11 @@ kconf add consumer --custom-id=auth-consumer --user-name=guest --tags=silver-tie
 kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 ```
 
+### Features backlog (for v0.4 release)
+
+- [ ] Endpoint to add a LDAP pluging for a consumer
+- [ ] Endpoint to add a OAuth2 pluging for a consumer
+
 ### Features backlog (for v0.3 release)
 
 - [ ] Endpoint to add a new upstream
@@ -69,9 +74,7 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 - [ ] Add parameter to Add Plugin command to specify plugin config
 - [X] ~~Endpoint to add a Basic Auth pluging for a consumer~~
 - [ ] Endpoint to add a JWT pluging for a consumer
-- [ ] Endpoint to add a Key Auth pluging for a consumer
-- [ ] Endpoint to add a LDAP pluging for a consumer
-- [ ] Endpoint to add a OAuth2 pluging for a consumer
+- [X] ~~Endpoint to add a Key Auth pluging for a consumer~~
 - [ ] Add missing unit tests
 
 ### Features backlog (for v0.1 release)
