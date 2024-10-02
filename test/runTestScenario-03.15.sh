@@ -2,13 +2,11 @@
 
 #   test scenatio #03.15
 export TEST_SCENARIO='03.15'
-export DESCRIPTION='command add consumer-basic-auth'
+export DESCRIPTION='command add consumer-basic-auth with non existing consumer'
 
-export TARGET_OPTIONS="-verbose add consumer-basic-auth --id=${CUSTOMER_GUID} --user-name=guest --password=1234"
-export EXPECTED_EXIT_STATUS=0
-export EXPECTED_RESULT='^new plugin ID: (\S+)$'
-export EXPECTED_RESULT_TYPE='regex_id'
+export TARGET_OPTIONS="add consumer-basic-auth --id=00000-00000"
+export EXPECTED_EXIT_STATUS=255
+export EXPECTED_RESULT='[error] consumer not found'
+export EXPECTED_RESULT_TYPE='string'
 
 performFunctionalTestScenario
-
-#export PLUGIN_GUID="${REGEX_RESULT}"
