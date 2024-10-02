@@ -25,8 +25,8 @@ type KongPluginConfig struct {
 type KongPlugin struct {
 	instanceName string
 	name         string
+	serviceId    string
 	routeId      string
-	service      string
 	consumer     string
 	config       []KongPluginConfig
 	protocols    []string
@@ -35,13 +35,14 @@ type KongPlugin struct {
 }
 
 // create a new Kong plugin
-func NewKongPlugin(name string, routeId string, config []KongPluginConfig, enabled bool) *KongPlugin {
+func NewKongPlugin(name string, serviceId string, routeId string, config []KongPluginConfig, enabled bool) *KongPlugin {
 
 	return &KongPlugin{
-		name:    name,
-		routeId: routeId,
-		config:  config,
-		enabled: enabled,
+		name:      name,
+		serviceId: serviceId,
+		routeId:   routeId,
+		config:    config,
+		enabled:   enabled,
 	}
 }
 
@@ -53,6 +54,7 @@ type KongPluginEntityId struct {
 // kong plugin request payload
 type KongPluginRequest struct {
 	Name    string              `json:"name,omitempty"`
+	Service *KongPluginEntityId `json:"service,omitempty"`
 	Route   *KongPluginEntityId `json:"route,omitempty"`
 	Enabled bool                `json:"enabled"`
 }
@@ -103,13 +105,26 @@ func (ks *KongServerDomain) AddPlugin(newKongPlugin *KongPlugin, options Options
 
 	var pluginURL string = fmt.Sprintf("%s/%s", ks.ServerURL(), pluginsResource)
 
-	payload, err := json.Marshal(KongPluginRequest{
-		Name: newKongPlugin.name,
-		Route: &KongPluginEntityId{
-			Id: newKongPlugin.routeId,
-		},
+	pluginReq := KongPluginRequest{
+		Name:    newKongPlugin.name,
 		Enabled: newKongPlugin.enabled,
-	})
+	}
+
+	if len(newKongPlugin.serviceId) > 0 {
+
+		pluginReq.Service = &KongPluginEntityId{
+			Id: newKongPlugin.serviceId,
+		}
+	}
+
+	if len(newKongPlugin.routeId) > 0 {
+
+		pluginReq.Route = &KongPluginEntityId{
+			Id: newKongPlugin.routeId,
+		}
+	}
+
+	payload, err := json.Marshal(pluginReq)
 	if err != nil {
 		return err
 	}
@@ -273,6 +288,14 @@ func (ks *KongServerDomain) UpdatePlugin(id string, updatedKongPlugin *KongPlugi
 		Name:    updatedKongPlugin.name,
 		Enabled: updatedKongPlugin.enabled,
 	}
+
+	if len(updatedKongPlugin.serviceId) > 0 {
+
+		pluginReq.Service = &KongPluginEntityId{
+			Id: updatedKongPlugin.serviceId,
+		}
+	}
+
 	if len(updatedKongPlugin.routeId) > 0 {
 
 		pluginReq.Route = &KongPluginEntityId{

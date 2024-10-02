@@ -2,11 +2,11 @@
 
 #   test scenatio #03.14
 export TEST_SCENARIO='03.14'
-export DESCRIPTION='command add consumer-basic-auth with non existing consumer'
+export DESCRIPTION='command add consumer-basic-auth without parameters'
 
-export TARGET_OPTIONS="add consumer-basic-auth --id=00000-00000"
+export TARGET_OPTIONS='add consumer-basic-auth'
 export EXPECTED_EXIT_STATUS=255
-export EXPECTED_RESULT='[error] consumer not found'
+export EXPECTED_RESULT='[error] missing consumer id: option --id={id} required for this command'
 export EXPECTED_RESULT_TYPE='string'
 
 performFunctionalTestScenario

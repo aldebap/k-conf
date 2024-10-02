@@ -320,6 +320,7 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 
 	case "plugin":
 		var name string
+		var serviceId string
 		var routeId string
 		var enabled bool = true
 
@@ -327,6 +328,11 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 			match := nameRegEx.FindAllStringSubmatch(command[i], -1)
 			if len(match) == 1 {
 				name = match[0][1]
+			}
+
+			match = serviceIdRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				serviceId = match[0][1]
 			}
 
 			match = routeIdRegEx.FindAllStringSubmatch(command[i], -1)
@@ -348,7 +354,7 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 				}
 			}
 		}
-		newKongPlugin := NewKongPlugin(name, routeId, []KongPluginConfig{}, enabled)
+		newKongPlugin := NewKongPlugin(name, serviceId, routeId, []KongPluginConfig{}, enabled)
 
 		return myKongServer.AddPlugin(newKongPlugin, options)
 	}
@@ -588,12 +594,18 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 			return errors.New("missing plugin id: option --id={id} required for this command")
 		}
 
+		var serviceId string
 		var routeId string
 		var enabled bool = true
 
 		for i := 1; i < len(command); i++ {
 
-			match := routeIdRegEx.FindAllStringSubmatch(command[i], -1)
+			match := serviceIdRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				serviceId = match[0][1]
+			}
+
+			match = routeIdRegEx.FindAllStringSubmatch(command[i], -1)
 			if len(match) == 1 {
 				routeId = match[0][1]
 			}
@@ -612,7 +624,7 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 				}
 			}
 		}
-		updatedKongPlugin := NewKongPlugin("", routeId, nil, enabled)
+		updatedKongPlugin := NewKongPlugin("", serviceId, routeId, nil, enabled)
 
 		return myKongServer.UpdatePlugin(id, updatedKongPlugin, options)
 	}
