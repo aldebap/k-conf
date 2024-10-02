@@ -35,6 +35,14 @@ kconf add consumer --custom-id=auth-consumer --user-name=guest --tags=silver-tie
 ```
 
 ```sh
+kconf add consumer-basic-auth --id=${CUSTOMER_GUID} --user-name=guest --password=1234"
+```
+
+```sh
+kconf add consumer-key-auth --id=${CUSTOMER_GUID} --key=d5a37fa6-b033-4107-a29f-ebf51b443968 --ttl=0"
+```
+
+```sh
 kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 ```
 
@@ -42,6 +50,7 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 
 - [ ] Endpoint to add a LDAP pluging for a consumer
 - [ ] Endpoint to add a OAuth2 pluging for a consumer
+- [ ] Add parameter to Add Plugin command to specify plugin config
 
 ### Features backlog (for v0.3 release)
 
@@ -70,8 +79,7 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 - [X] ~~Endpoint to get a list of plugings~~
 - [X] ~~Endpoint to update a pluging~~
 - [X] ~~Endpoint to delete a pluging~~
-- [ ] Add parameter to Add Plugin command to set the service id
-- [ ] Add parameter to Add Plugin command to specify plugin config
+- [X] ~~Add parameter to Add Plugin command to set the service id~~
 - [X] ~~Endpoint to add a Basic Auth pluging for a consumer~~
 - [ ] Endpoint to add a JWT pluging for a consumer
 - [X] ~~Endpoint to add a Key Auth pluging for a consumer~~
