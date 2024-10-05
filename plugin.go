@@ -98,6 +98,7 @@ const (
 
 	basicAuthPlugins string = "basic-auth"
 	keyAuthPlugins   string = "key-auth"
+	jwtPlugins       string = "jwt"
 )
 
 // add a new plugin to Kong

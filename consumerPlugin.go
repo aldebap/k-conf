@@ -189,3 +189,104 @@ func (ks *KongServerDomain) AddConsumerKeyAuth(id string, newKongKeyAuthConfig *
 
 	return nil
 }
+
+// kong JWT config attributes
+type KongJWTConfig struct {
+	algorithm string
+	key       string
+	secret    string
+}
+
+// create a new kong JWT config
+func NewKongJWTConfig(algorithm string, key string, secret string) *KongJWTConfig {
+
+	return &KongJWTConfig{
+		algorithm: algorithm,
+		key:       key,
+		secret:    secret,
+	}
+}
+
+// kong consumer ID payload
+type KongConsumerID struct {
+	Id string `json:"id"`
+}
+
+// kong consumer JWT request payload
+type KongConsumerJWTRequest struct {
+	Algorithm string `json:"algorithm,omitempty"`
+	Key       string `json:"key,omitempty"`
+	Secret    string `json:"secret,omitempty"`
+}
+
+// kong consumer JWT response payload
+type KongConsumerJWTResponse struct {
+	Id        string          `json:"id"`
+	Consumer  *KongConsumerID `json:"service,omitempty"`
+	Algorithm string          `json:"algorithm,omitempty"`
+	Key       string          `json:"key,omitempty"`
+	Secret    string          `json:"secret,omitempty"`
+	Tags      []string        `json:"tags"`
+}
+
+func (ks *KongServerDomain) AddConsumerJWT(id string, newKongJWTConfig *KongJWTConfig, options Options) error {
+
+	var consumerBasicAuthURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, jwtPlugins)
+
+	payload, err := json.Marshal(KongConsumerJWTRequest{
+		Algorithm: newKongJWTConfig.algorithm,
+		Key:       newKongJWTConfig.key,
+		Secret:    newKongJWTConfig.secret,
+	})
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", consumerBasicAuthURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("consumer not found")
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return errors.New("fail sending add consumer JWT command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var consumerJWTResp KongConsumerJWTResponse
+
+	err = json.Unmarshal(respPayload, &consumerJWTResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nnew plugin ID: %s\n", resp.Status, consumerJWTResp.Id)
+		} else {
+			fmt.Printf("%s\n", consumerJWTResp.Id)
+		}
+	}
+
+	return nil
+}
