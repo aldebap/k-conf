@@ -38,6 +38,7 @@ type KongServer interface {
 
 	AddConsumerBasicAuth(id string, newKongBasicAuthConfig *KongBasicAuthConfig, options Options) error
 	AddConsumerKeyAuth(id string, newKongKeyAuthConfig *KongKeyAuthConfig, options Options) error
+	AddConsumerJWT(id string, newKongJWTConfig *KongJWTConfig, options Options) error
 
 	AddPlugin(newKongPlugin *KongPlugin, options Options) error
 	QueryPlugin(id string, options Options) error

@@ -27,7 +27,9 @@ var (
 	routeIdRegEx   *regexp.Regexp
 	idRegEx        *regexp.Regexp
 	passwordRegEx  *regexp.Regexp
+	algorithmRegEx *regexp.Regexp
 	keyRegEx       *regexp.Regexp
+	secretRegEx    *regexp.Regexp
 	ttlRegEx       *regexp.Regexp
 )
 
@@ -101,7 +103,17 @@ func compileRegExp() error {
 		return err
 	}
 
+	algorithmRegEx, err = regexp.Compile(`^--algorithm\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
 	keyRegEx, err = regexp.Compile(`^--key\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	secretRegEx, err = regexp.Compile(`^--secret\s*=\s*(\S.*)\s*$`)
 	if err != nil {
 		return err
 	}
@@ -317,6 +329,41 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		newKongKeyAuthConfig := NewKongKeyAuthConfig(key, int64(ttl))
 
 		return myKongServer.AddConsumerKeyAuth(id, newKongKeyAuthConfig, options)
+
+	case "consumer-jwt":
+		var id string
+		var algorithm string
+		var key string
+		var secret string
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+
+			match = algorithmRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				algorithm = match[0][1]
+			}
+
+			match = keyRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				key = match[0][1]
+			}
+
+			match = secretRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				secret = match[0][1]
+			}
+		}
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		newKongJWTConfig := NewKongJWTConfig(algorithm, key, secret)
+
+		return myKongServer.AddConsumerJWT(id, newKongJWTConfig, options)
 
 	case "plugin":
 		var name string

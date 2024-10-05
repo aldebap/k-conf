@@ -50,6 +50,9 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 
 - [ ] Endpoint to add a LDAP pluging for a consumer
 - [ ] Endpoint to add a OAuth2 pluging for a consumer
+- [ ] Endpoint to add a HMAC Auth pluging for a consumer
+- [ ] Endpoint to add a Kong Functions (Pre) pluging for a consumer
+- [ ] Endpoint to add a Kong Functions (Post) pluging for a consumer
 - [ ] Add parameter to Add Plugin command to specify plugin config
 
 ### Features backlog (for v0.3 release)
@@ -64,6 +67,9 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 - [ ] Endpoint to get a list of targets
 - [ ] Endpoint to update a target
 - [ ] Endpoint to delete a target
+- [ ] Endpoint to add a IP Restriction pluging for a consumer
+- [ ] Endpoint to add a Rate Limit pluging for a consumer
+- [ ] Endpoint to add a Request Size Limit pluging for a consumer
 
 ### Features backlog (for v0.2 release)
 
@@ -81,7 +87,7 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 - [X] ~~Endpoint to delete a pluging~~
 - [X] ~~Add parameter to Add Plugin command to set the service id~~
 - [X] ~~Endpoint to add a Basic Auth pluging for a consumer~~
-- [ ] Endpoint to add a JWT pluging for a consumer
+- [X] ~~Endpoint to add a JWT pluging for a consumer~~
 - [X] ~~Endpoint to add a Key Auth pluging for a consumer~~
 - [ ] Add missing unit tests
 
