@@ -47,7 +47,6 @@ func Test_CheckStatus(t *testing.T) {
 		//	mock for Kong Admin
 		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
-			//			w.Write([]byte(`{"id": 1, "name": "kyle", "description": "novice gopher"}`))
 		}))
 		defer mockKongAdmin.Close()
 
