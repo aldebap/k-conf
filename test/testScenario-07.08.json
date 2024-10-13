@@ -1,0 +1,10 @@
+{
+    "scenario": "07.8",
+    "description": "command delete consumer",
+    "option": "-verbose delete consumer --id=${CUSTOMER_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 204 No Content$",
+        "format": "regex"
+    }
+}

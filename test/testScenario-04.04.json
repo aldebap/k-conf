@@ -1,0 +1,10 @@
+{
+    "scenario": "04.4",
+    "description": "command query non existing service",
+    "option": "-verbose query service --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] service not found",
+        "format": "string"
+    }
+}

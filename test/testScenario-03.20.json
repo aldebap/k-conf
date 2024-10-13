@@ -1,0 +1,10 @@
+{
+    "scenario": "03.20",
+    "description": "command add consumer-jwt without parameters",
+    "option": "add consumer-jwt",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

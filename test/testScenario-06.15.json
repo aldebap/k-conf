@@ -1,0 +1,10 @@
+{
+    "scenario": "06.15",
+    "description": "command update plugin",
+    "option": "-verbose update plugin --id=${PLUGIN_GUID} --enabled=false",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK",
+        "format": "regex"
+    }
+}

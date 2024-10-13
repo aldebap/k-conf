@@ -1,0 +1,10 @@
+{
+    "scenario": "06.5",
+    "description": "command update non existing service",
+    "option": "-verbose update service --id=00000-00000 --enabled=false",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] service not found",
+        "format": "regex"
+    }
+}

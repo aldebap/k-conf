@@ -1,0 +1,10 @@
+{
+    "scenario": "04.13",
+    "description": "command query non existing plugin",
+    "option": "-verbose query plugin --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] plugin not found",
+        "format": "string"
+    }
+}

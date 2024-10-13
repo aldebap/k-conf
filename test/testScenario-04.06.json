@@ -1,0 +1,10 @@
+{
+    "scenario": "04.6",
+    "description": "command query route without parameters",
+    "option": "query route",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing route id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "scenario": "07.7",
+    "description": "command delete consumer without parameters",
+    "option": "delete consumer",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

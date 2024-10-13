@@ -1,0 +1,10 @@
+{
+    "scenario": "05.4",
+    "description": "command list route",
+    "option": "-verbose list route --id=${ROUTE_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK$",
+        "format": "regex"
+    }
+}

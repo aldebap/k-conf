@@ -51,8 +51,17 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 - [ ] Endpoint to add a LDAP pluging for a consumer
 - [ ] Endpoint to add a OAuth2 pluging for a consumer
 - [ ] Endpoint to add a HMAC Auth pluging for a consumer
+- [ ] Endpoint to add a IP Restriction pluging for a consumer
 - [ ] Endpoint to add a Kong Functions (Pre) pluging for a consumer
 - [ ] Endpoint to add a Kong Functions (Post) pluging for a consumer
+- [ ] Endpoint to add a OpenTelemetry pluging for a consumer
+- [ ] Endpoint to add a Correlation ID pluging for a consumer
+- [ ] Endpoint to add a Request Transformer pluging for a consumer
+- [ ] Endpoint to add a Response Transformer pluging for a consumer
+- [ ] Endpoint to add a gRPC Web pluging for a consumer
+- [ ] Endpoint to add a File Log pluging for a consumer
+- [ ] Endpoint to add a HTTP Log pluging for a consumer
+- [ ] Endpoint to add a Syslog pluging for a consumer
 - [ ] Add parameter to Add Plugin command to specify plugin config
 
 ### Features backlog (for v0.3 release)
@@ -67,7 +76,6 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 - [ ] Endpoint to get a list of targets
 - [ ] Endpoint to update a target
 - [ ] Endpoint to delete a target
-- [ ] Endpoint to add a IP Restriction pluging for a consumer
 - [ ] Endpoint to add a Rate Limit pluging for a consumer
 - [ ] Endpoint to add a Request Size Limit pluging for a consumer
 

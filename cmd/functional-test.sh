@@ -10,15 +10,15 @@ export  NOCOLOR='\033[0m'
 export  SINGLE_TEST_SCRIPT=''
 export  START_KONG='false'
 
-if [ "${1}" == "--test-script" ]
+if [ "${1}" == "--test-scenario" ]
 then
     shift
 
-    export  SINGLE_TEST_SCRIPT="${1}"
+    export  SINGLE_TEST_SCENARIO="${1}"
 
-    if [ -z "${SINGLE_TEST_SCRIPT}" ]
+    if [ -z "${SINGLE_TEST_SCENARIO}" ]
     then
-	    echo -e "${RED}[error] option --test-script requires an argument with test script name${NOCOLOR}"
+	    echo -e "${RED}[error] option --test-scenario requires an argument with test scenario name${NOCOLOR}"
 	    exit 1
     fi
 
@@ -34,6 +34,7 @@ fi
 export  VERBOSE='true'
 
 export  TEST_DIRECTORY=test
+export  TEST_SCRIPT=testScenario.ksh
 export  OUTPUT=testScenario.out
 export  ERROR=testScenario.err
 
@@ -48,7 +49,7 @@ function performFunctionalTestScenario {
     if [ ${EXIT_STATUS} -ne ${EXPECTED_EXIT_STATUS} ]
     then
 	    echo -e "${RED}[error] unexpected exit status:${LIGHTGRAY} ${EXIT_STATUS}: expected: ${EXPECTED_EXIT_STATUS}${NOCOLOR}"
-	    exit 1
+	    return 1
     fi
 
     if [ ${EXIT_STATUS} -eq 0 ]
@@ -77,7 +78,7 @@ function performFunctionalTestScenario {
             echo -e "[run-test] ${GREEN}   --- PASS${NOCOLOR}"
         else
 	        echo -e "${RED}[error] unexpected result:${LIGHTGRAY} '$( cat ${OUTPUT} )' should be '${EXPECTED_RESULT}'${NOCOLOR}"
-	        exit 1
+	        return 1
         fi
     else
         if [ "$( cat ${ERROR} )" == "${EXPECTED_RESULT}" ]
@@ -85,9 +86,11 @@ function performFunctionalTestScenario {
             echo -e "[run-test] ${GREEN}   --- PASS${NOCOLOR}"
         else
 	        echo -e "${RED}[error] unexpected error:${LIGHTGRAY} '$( cat ${ERROR} )' should be '${EXPECTED_RESULT}'${NOCOLOR}"
-	        exit 1
+	        return 1
         fi
     fi
+
+    return 0
 }
 
 #   function to execute the "functional-test" target action
@@ -102,24 +105,91 @@ function functionalTestTarget {
         sleep 10s
     fi
 
-    for TEST_SCRIPT in ${TEST_DIRECTORY}/runTestScenario*
+    export  SUCCESSFUL_TESTS=0
+    export  FAILED_TESTS=0
+
+    for TEST_SCENARIO_FILE in ${TEST_DIRECTORY}/testScenario*.json
     do
-        if [ -z "${SINGLE_TEST_SCRIPT}" -o "${TEST_SCRIPT}" == "${SINGLE_TEST_SCRIPT}" ]
+        export TEST_SCENARIO=$( cat ${TEST_SCENARIO_FILE} | jq --raw-output '.["scenario"]' )
+        export DESCRIPTION=$( cat ${TEST_SCENARIO_FILE} | jq --raw-output '.["description"]' )
+        export TARGET_OPTIONS=$( cat ${TEST_SCENARIO_FILE} | jq --raw-output '.["option"]' )
+        export EXPECTED_EXIT_STATUS=$( cat ${TEST_SCENARIO_FILE} | jq --raw-output '.["expected-result"] | .["status"]' )
+        export EXPECTED_EXIT_OUTPUT=$( cat ${TEST_SCENARIO_FILE} | jq --raw-output '.["expected-result"] | .["output"]' )
+        export EXPECTED_EXIT_FORMAT=$( cat ${TEST_SCENARIO_FILE} | jq --raw-output '.["expected-result"] | .["format"]' )
+
+        export PRE_TEST_SCRIPT=$( cat ${TEST_SCENARIO_FILE} | jq --raw-output '.["pre-test-script"]' )
+        export POST_TEST_SCRIPT=$( cat ${TEST_SCENARIO_FILE} | jq --raw-output '.["post-test-script"]' )
+
+        if [ -z "${SINGLE_TEST_SCENARIO}" -o "${TEST_SCENARIO}" == "${SINGLE_TEST_SCENARIO}" ]
         then
-            . ${TEST_SCRIPT}
+            cat <<TEST_SCRIPT > ${TEST_SCRIPT}
+#!  /usr/bin/ksh
+
+export TEST_SCENARIO='${TEST_SCENARIO}'
+export DESCRIPTION='${DESCRIPTION}'
+
+export TARGET_OPTIONS="${TARGET_OPTIONS}"
+export EXPECTED_EXIT_STATUS=${EXPECTED_EXIT_STATUS}
+export EXPECTED_RESULT='${EXPECTED_EXIT_OUTPUT}'
+export EXPECTED_RESULT_TYPE='${EXPECTED_EXIT_FORMAT}'
+TEST_SCRIPT
+
+            if [ "${PRE_TEST_SCRIPT}" != "null" -a ! -z "${PRE_TEST_SCRIPT}" ]
+            then
+                echo ${PRE_TEST_SCRIPT} >> ${TEST_SCRIPT}
+            fi
+
+            cat <<TEST_SCRIPT >> ${TEST_SCRIPT}
+
+performFunctionalTestScenario
+
+TEST_SCRIPT
+
+            if [ "${POST_TEST_SCRIPT}" != "null" -a ! -z "${POST_TEST_SCRIPT}" ]
+            then
+                echo ${POST_TEST_SCRIPT} >> ${TEST_SCRIPT}
+            fi
+
+            chmod u+x ${TEST_SCRIPT}
+            . ./${TEST_SCRIPT}
+            EXIT_STATUS=$?
+
+            if [ ${EXIT_STATUS} -eq 0 ]
+            then
+                SUCCESSFUL_TESTS=$(( ${SUCCESSFUL_TESTS} + 1 ))
+            else
+                FAILED_TESTS=$(( ${FAILED_TESTS} + 1 ))
+            fi
         fi
     done
+
+    #   final results
+    echo -e "[run-test] ${SUCCESSFUL_TESTS} successful tests"
+
+    if [ ${FAILED_TESTS} -ne 0 ]
+    then
+        echo -e "[run-test] ${RED}${FAILED_TESTS} failed tests"
+        return 1
+    fi
 
     #   stop Kong afterwards
     if [ "${START_KONG}" == 'true' ]
     then
         . cmd/stopKong.sh
     fi
+
+    return 0
 }
 
 export  TARGET=functional-test
 export  PROJECT_TARGET=kconf
 
 functionalTestTarget
+EXIT_STATUS=$?
 
-rm -f ${OUTPUT} ${ERROR}
+rm -f ${TEST_SCRIPT} ${OUTPUT} ${ERROR}
+
+if [ ${EXIT_STATUS} -eq 0 ]
+then
+    exit 1
+fi

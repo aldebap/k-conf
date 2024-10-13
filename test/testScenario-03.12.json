@@ -1,0 +1,12 @@
+{
+    "scenario": "03.12",
+    "description": "command add plugin",
+    "option": "-verbose add plugin --name=key-auth --service-id=${SERVICE_GUID} --enabled=true",
+    "expected-result": {
+        "status": 0,
+        "output": "^new plugin ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "",
+    "post-test-script": "export PLUGIN_GUID=\"${REGEX_RESULT}\""
+}

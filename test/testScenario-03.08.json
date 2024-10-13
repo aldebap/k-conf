@@ -1,0 +1,10 @@
+{
+    "scenario": "03.8",
+    "description": "command add consumer without parameters",
+    "option": "add consumer",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] fail sending add consumer command to Kong: 400 Bad Request",
+        "format": "string"
+    }
+}

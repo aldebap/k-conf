@@ -1,0 +1,10 @@
+{
+    "scenario": "06.6",
+    "description": "command update service",
+    "option": "-verbose update service --id=${SERVICE_GUID} --enabled=false",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK",
+        "format": "regex"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "scenario": "07.6",
+    "description": "command delete service",
+    "option": "-verbose delete service --id=${SERVICE_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 204 No Content$",
+        "format": "regex"
+    }
+}

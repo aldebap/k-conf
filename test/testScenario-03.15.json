@@ -1,0 +1,10 @@
+{
+    "scenario": "03.15",
+    "description": "command add consumer-basic-auth with non existing consumer",
+    "option": "add consumer-basic-auth --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "string"
+    }
+}

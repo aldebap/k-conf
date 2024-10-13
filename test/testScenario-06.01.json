@@ -1,0 +1,10 @@
+{
+    "scenario": "06.1",
+    "description": "command update without entity",
+    "option": "update",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing entity for command update: available entities: service, route",
+        "format": "string"
+    }
+}

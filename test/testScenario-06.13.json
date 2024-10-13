@@ -1,0 +1,10 @@
+{
+    "scenario": "06.13",
+    "description": "command update plugin without parameters",
+    "option": "update plugin",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing plugin id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

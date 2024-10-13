@@ -1,0 +1,10 @@
+{
+    "scenario": "03.6",
+    "description": "command add route without parameters",
+    "option": "add route",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] fail sending add route command to Kong: 400 Bad Request",
+        "format": "string"
+    }
+}

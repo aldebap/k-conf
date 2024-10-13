@@ -1,0 +1,10 @@
+{
+    "scenario": "03.14",
+    "description": "command add consumer-basic-auth without parameters",
+    "option": "add consumer-basic-auth",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

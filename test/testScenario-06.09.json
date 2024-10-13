@@ -1,0 +1,10 @@
+{
+    "scenario": "06.9",
+    "description": "command update route",
+    "option": "-verbose update route --id=${ROUTE_GUID} --protocols=http,https --methods=GET --paths=/api/v1/test_scenario-06.9",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK",
+        "format": "regex"
+    }
+}

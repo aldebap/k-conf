@@ -1,0 +1,10 @@
+{
+    "scenario": "03.1",
+    "description": "command add without entity",
+    "option": "add",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing entity for command add: available entities: service, route",
+        "format": "string"
+    }
+}

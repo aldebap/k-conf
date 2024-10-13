@@ -1,0 +1,10 @@
+{
+    "scenario": "04.2",
+    "description": "command query with invalid entity",
+    "option": "query bug",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] invalid entity for command query: bug",
+        "format": "string"
+    }
+}

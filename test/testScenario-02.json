@@ -1,0 +1,10 @@
+{
+    "scenario": "02",
+    "description": "command status",
+    "option": "status",
+    "expected-result": {
+        "status": 0,
+        "output": "200 OK",
+        "format": "string"
+    }
+}

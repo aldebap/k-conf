@@ -1,0 +1,10 @@
+{
+    "scenario": "04.1",
+    "description": "command query without entity",
+    "option": "query",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing entity for command query: available entities: service, route",
+        "format": "string"
+    }
+}

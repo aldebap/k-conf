@@ -1,0 +1,10 @@
+{
+    "scenario": "04.10",
+    "description": "command query non existing consumer",
+    "option": "-verbose query consumer --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "string"
+    }
+}

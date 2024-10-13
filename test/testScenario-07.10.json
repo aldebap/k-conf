@@ -1,0 +1,10 @@
+{
+    "scenario": "07.10",
+    "description": "command delete plugin",
+    "option": "-verbose delete plugin --id=${PLUGIN_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 204 No Content$",
+        "format": "regex"
+    }
+}

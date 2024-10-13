@@ -1,0 +1,10 @@
+{
+    "scenario": "04.11",
+    "description": "command query consumer",
+    "option": "-verbose query consumer --id=${CUSTOMER_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK$",
+        "format": "regex"
+    }
+}

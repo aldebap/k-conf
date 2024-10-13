@@ -1,0 +1,10 @@
+{
+    "scenario": "04.7",
+    "description": "command query non existing route",
+    "option": "-verbose query route --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] route not found",
+        "format": "string"
+    }
+}

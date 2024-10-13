@@ -1,0 +1,10 @@
+{
+    "scenario": "06.12",
+    "description": "command update consumer",
+    "option": "-verbose update consumer --id=${CUSTOMER_GUID} --custom-id=test-scenario-03.11 --user-name=root,guest --tags=gold-tier",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK",
+        "format": "regex"
+    }
+}

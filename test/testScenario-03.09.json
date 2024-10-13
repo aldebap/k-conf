@@ -1,0 +1,12 @@
+{
+    "scenario": "03.9",
+    "description": "command add consumer",
+    "option": "-verbose add consumer --custom-id=test-scenario-03.9 --user-name=guest --tags=silver-tier",
+    "expected-result": {
+        "status": 0,
+        "output": "^new consumer ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "",
+    "post-test-script": "export CUSTOMER_GUID=\"${REGEX_RESULT}\""
+}

@@ -1,0 +1,10 @@
+{
+    "scenario": "06.14",
+    "description": "command update non existing plugin",
+    "option": "-verbose update plugin --id=00000-00000 --enabled=false",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] plugin not found",
+        "format": "regex"
+    }
+}

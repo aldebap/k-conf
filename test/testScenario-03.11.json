@@ -1,0 +1,10 @@
+{
+    "scenario": "03.11",
+    "description": "command add plugin with invalid value for option --enabled",
+    "option": "add plugin --enabled=maybe",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] wrong value for option --enabled: maybe",
+        "format": "string"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "scenario": "03.21",
+    "description": "command add consumer-jwt with non existing consumer",
+    "option": "add consumer-jwt --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "string"
+    }
+}
