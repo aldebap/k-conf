@@ -189,7 +189,7 @@ EXIT_STATUS=$?
 
 rm -f ${TEST_SCRIPT} ${OUTPUT} ${ERROR}
 
-if [ ${EXIT_STATUS} -eq 0 ]
+if [ ${EXIT_STATUS} -ne 0 ]
 then
     exit 1
 fi
