@@ -1,0 +1,10 @@
+{
+    "scenario": "06.2",
+    "description": "command update with invalid entity",
+    "option": "update bug",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] invalid entity for command update: bug",
+        "format": "string"
+    }
+}

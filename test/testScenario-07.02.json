@@ -1,0 +1,10 @@
+{
+    "scenario": "07.2",
+    "description": "command delete with invalid entity",
+    "option": "delete bug",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] invalid entity for command delete: bug",
+        "format": "string"
+    }
+}

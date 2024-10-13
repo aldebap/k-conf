@@ -1,0 +1,10 @@
+{
+    "scenario": "07.4",
+    "description": "command delete route",
+    "option": "-verbose delete route --id=${ROUTE_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 204 No Content$",
+        "format": "regex"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "scenario": "06.7",
+    "description": "command update route without parameters",
+    "option": "update route",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing route id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "scenario": "05.1",
+    "description": "command list without entity",
+    "option": "list",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing entity for command list: available entities: service, route",
+        "format": "string"
+    }
+}

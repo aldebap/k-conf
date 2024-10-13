@@ -1,0 +1,10 @@
+{
+    "scenario": "04.5",
+    "description": "command query service",
+    "option": "-verbose query service --id=${SERVICE_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK$",
+        "format": "regex"
+    }
+}

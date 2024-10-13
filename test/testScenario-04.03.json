@@ -1,0 +1,10 @@
+{
+    "scenario": "04.3",
+    "description": "command query service without parameters",
+    "option": "query service",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing service id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

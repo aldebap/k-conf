@@ -1,0 +1,10 @@
+{
+    "scenario": "03.2",
+    "description": "command add with invalid entity",
+    "option": "add bug",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] invalid entity for command add: bug",
+        "format": "string"
+    }
+}

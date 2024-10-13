@@ -1,0 +1,12 @@
+{
+    "scenario": "03.16",
+    "description": "command add consumer-basic-auth",
+    "option": "-verbose add consumer-basic-auth --id=${CUSTOMER_GUID} --user-name=guest --password=1234",
+    "expected-result": {
+        "status": 0,
+        "output": "^new plugin ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "",
+    "post-test-script": "#export PLUGIN_GUID=\"${REGEX_RESULT}\""
+}

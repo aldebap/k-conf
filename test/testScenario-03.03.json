@@ -1,0 +1,10 @@
+{
+    "scenario": "03.3",
+    "description": "command add service without parameters",
+    "option": "add service",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] fail sending add service command to Kong: 400 Bad Request",
+        "format": "string"
+    }
+}

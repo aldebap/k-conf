@@ -1,0 +1,10 @@
+{
+    "scenario": "04.12",
+    "description": "command query plugin without parameters",
+    "option": "query plugin",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing plugin id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

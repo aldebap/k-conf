@@ -1,0 +1,10 @@
+{
+    "scenario": "03.18",
+    "description": "command add consumer-key-auth with non existing consumer",
+    "option": "add consumer-key-auth --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "string"
+    }
+}

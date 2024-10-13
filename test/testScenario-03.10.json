@@ -1,0 +1,10 @@
+{
+    "scenario": "03.10",
+    "description": "command add plugin without parameters",
+    "option": "add plugin",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] fail sending add plugin command to Kong: 400 Bad Request",
+        "format": "string"
+    }
+}

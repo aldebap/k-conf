@@ -1,0 +1,10 @@
+{
+    "scenario": "04.9",
+    "description": "command query consumer without parameters",
+    "option": "query consumer",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

@@ -1,0 +1,10 @@
+{
+    "scenario": "01",
+    "description": "version option",
+    "option": "-version",
+    "expected-result": {
+        "status": 0,
+        "output": "kconf 0.2",
+        "format": "string"
+    }
+}

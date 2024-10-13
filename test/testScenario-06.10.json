@@ -1,0 +1,10 @@
+{
+    "scenario": "06.10",
+    "description": "command update consumer without parameters",
+    "option": "update consumer",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

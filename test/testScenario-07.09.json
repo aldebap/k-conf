@@ -1,0 +1,10 @@
+{
+    "scenario": "07.9",
+    "description": "command delete plugin without parameters",
+    "option": "delete plugin",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing plugin id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

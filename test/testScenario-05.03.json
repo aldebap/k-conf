@@ -1,0 +1,10 @@
+{
+    "scenario": "05.3",
+    "description": "command list service",
+    "option": "-verbose list service",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK$",
+        "format": "regex"
+    }
+}

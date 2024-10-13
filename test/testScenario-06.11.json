@@ -1,0 +1,10 @@
+{
+    "scenario": "06.11",
+    "description": "command update non existing consumer",
+    "option": "-verbose update consumer --id=00000-00000 --custom-id=test-scenario-03.11 --user-name=root,guest --tags=gold-tier",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "regex"
+    }
+}

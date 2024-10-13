@@ -1,0 +1,10 @@
+{
+    "scenario": "07.1",
+    "description": "command delete without entity",
+    "option": "delete",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing entity for command delete: available entities: service, route",
+        "format": "string"
+    }
+}

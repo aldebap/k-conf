@@ -1,0 +1,12 @@
+{
+    "scenario": "03.7",
+    "description": "command add route",
+    "option": "-verbose add route --name=test-scenario-03.7 --protocols=http --methods=GET,POST --paths=/api/v1/test_scenario-03.7 --service-id=${SERVICE_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^new route ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "",
+    "post-test-script": "export ROUTE_GUID=\"${REGEX_RESULT}\""
+}

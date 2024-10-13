@@ -1,0 +1,10 @@
+{
+    "scenario": "05.2",
+    "description": "command list with invalid entity",
+    "option": "list bug",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] invalid entity for command list: bug",
+        "format": "string"
+    }
+}

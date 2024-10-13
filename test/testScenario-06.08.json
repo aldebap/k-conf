@@ -1,0 +1,10 @@
+{
+    "scenario": "06.8",
+    "description": "command update non existing route",
+    "option": "-verbose update route --id=00000-00000 --protocols=http,https --methods=GET --paths=/api/v1/test_scenario-06.8",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] route not found",
+        "format": "regex"
+    }
+}

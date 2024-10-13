@@ -1,0 +1,10 @@
+{
+    "scenario": "07.5",
+    "description": "command delete service without parameters",
+    "option": "delete service",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing service id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

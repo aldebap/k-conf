@@ -1,0 +1,12 @@
+{
+    "scenario": "03.19",
+    "description": "command add consumer-key-auth",
+    "option": "-verbose add consumer-key-auth --id=${CUSTOMER_GUID} --key=d5a37fa6-b033-4107-a29f-ebf51b443968 --ttl=0",
+    "expected-result": {
+        "status": 0,
+        "output": "^new plugin ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "",
+    "post-test-script": "#export PLUGIN_GUID=\"${REGEX_RESULT}\""
+}

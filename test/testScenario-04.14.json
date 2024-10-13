@@ -1,0 +1,11 @@
+{
+    "scenario": "04.14",
+    "description": "command query plugin",
+    "option": "-verbose query plugin --id=${PLUGIN_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK$",
+        "format": "regex"
+    },
+    "pre-test-script": "#echo \"[debug] scenario 04.14- plugin_id = ${PLUGIN_GUID}\""
+}

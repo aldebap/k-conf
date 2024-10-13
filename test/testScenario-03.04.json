@@ -1,0 +1,10 @@
+{
+    "scenario": "03.4",
+    "description": "command add service with invalid value for option --enabled",
+    "option": "add service --enabled=maybe",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] wrong value for option --enabled: maybe",
+        "format": "string"
+    }
+}
