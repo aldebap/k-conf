@@ -287,7 +287,7 @@ func (ks *KongServerDomain) UpdateRoute(id string, updatedKongRoute *KongRoute, 
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return errors.New("fail sending patch service command to Kong: " + resp.Status)
+		return errors.New("fail sending patch route command to Kong: " + resp.Status)
 	}
 
 	//	parse response payload
