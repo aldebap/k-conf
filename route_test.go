@@ -308,6 +308,125 @@ func Test_ListRoute(t *testing.T) {
 	})
 }
 
+// Test_UpdateRoute unit tests for UpdateRoute() method
+func Test_UpdateRoute(t *testing.T) {
+
+	t.Run(">>> UpdateRoute: scenario 1 - route not found", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		want := errors.New("route not found")
+		got := kongServer.UpdateRoute("1234", &KongRoute{}, Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want.Error() != got.Error() {
+			t.Errorf("failed checking kong status: error expected: %d result: %d", want, got)
+		}
+	})
+
+	t.Run(">>> UpdateRoute: scenario 2 - internal server error", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		want := errors.New("fail sending patch route command to Kong: 500 Internal Server Error")
+		got := kongServer.UpdateRoute("1234", &KongRoute{}, Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want.Error() != got.Error() {
+			t.Errorf("failed checking kong status: error expected: %d result: %d", want, got)
+		}
+	})
+
+	t.Run(">>> UpdateRoute: scenario 3 - route returned successfuly", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{
+				"data": [
+					{
+						"regex_priority": 0,
+						"request_buffering": true,
+						"response_buffering": true,
+						"strip_path": true,
+						"service": {
+							"id":"1343894e-404a-4f9e-a982-9e5c0e9d1733"
+						},
+						"path_handling": "v0",
+						"preserve_host": false,
+						"snis": null,
+						"name": "Produto",
+						"tags": null,
+						"hosts": null,
+						"https_redirect_status_code": 426,
+						"updated_at": 1724380393,
+						"protocols": [
+							"http"
+						],
+						"created_at": 1724380393,
+						"paths": [
+							"/gwa/v1/produtos"
+						],
+						"sources": null,
+						"destinations": null,
+						"headers": null,
+						"id": "6154be97-ce77-47ea-bf46-7b0266b2c054",
+						"methods": [
+							"GET",
+							"POST"
+						]
+					}
+				],
+				"next": "null"
+			}`))
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		var want error = nil
+		got := kongServer.UpdateRoute("1234", &KongRoute{}, Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want != got {
+			t.Errorf("failed checking kong status: success expected: result: %s", got.Error())
+		}
+	})
+}
+
 // Test_DeleteRoute unit tests for DeleteRoute() method
 func Test_DeleteRoute(t *testing.T) {
 
