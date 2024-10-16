@@ -483,5 +483,3 @@ func Test_DeleteRoute(t *testing.T) {
 		}
 	})
 }
-
-//	TODO: add test cases for update route
