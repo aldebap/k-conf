@@ -97,7 +97,7 @@ kconf add plugin --name=key-auth --route-id=${ROUTE_GUID} --enabled=true
 - [X] ~~Endpoint to add a Basic Auth pluging for a consumer~~
 - [X] ~~Endpoint to add a JWT pluging for a consumer~~
 - [X] ~~Endpoint to add a Key Auth pluging for a consumer~~
-- [ ] Add missing unit tests
+- [X] ~~Add missing unit tests~~
 
 ### Features backlog (for v0.1 release)
 
