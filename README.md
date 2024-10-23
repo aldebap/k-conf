@@ -6,6 +6,39 @@ kconf is just a simple utility to configure [Kong Gateway](https://konghq.com/pr
 To achieve this, kconf was planned to implement calls to all [Kong APIs](https://docs.konghq.com/gateway/api/admin-oss/latest/).
 The initial idea for kconf was inpired by [GCP gcloud](https://cloud.google.com/sdk/gcloud/).
 
+## Compatibility
+
+kconf is compatible with Kong Gateway >= 3.8.x.35.
+
+## Installation
+
+**macOS**
+
+If you are on macOS, install decK using brew:
+
+```sh
+brew tap aldebap/kconf
+brew install kconf
+```
+
+**Linux**
+
+If you are Linux, you can either use the Debian or RPM archive from the [GitHub release page](https://github.com/aldebap/kconf/releases/tag/v0.2.0) or install by downloading the binary:
+
+```sh
+curl -sL https://github.com/aldebap/kconf/releases/download/v0.2.0/kconf_Linux_x86_64.tar.gz -o kconf.tar.gz
+tar -xf kconf.tar.gz -C /tmp
+sudo cp /tmp/kconf /usr/local/bin/
+```
+
+**Windows**
+
+If you are on Windows, you can download the binary from the [GitHub release page](https://github.com/aldebap/kconf/releases/tag/v0.2.0) or via PowerShell:
+
+```sh
+curl -sL https://github.com/aldebap/kconf/releases/download/v0.2.0/kconf_Windows_x86_64.zip -o kconf.zip
+```
+
 ## Building kconf
 
 kconf is 100% written in Golang and this repo provides some scripts (ksh) to build it, run unit tests and run functional tests:
