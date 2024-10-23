@@ -305,13 +305,20 @@ func (ks *KongServerDomain) UpdateRoute(id string, updatedKongRoute *KongRoute, 
 		return err
 	}
 
+	err = json.Unmarshal(respPayload, &routeResp)
+	if err != nil {
+		return err
+	}
+
 	if options.jsonOutput {
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
 		if options.verbose {
-			fmt.Printf("http response status code: %s\nroute ID: %s\n", resp.Status, routeResp.Id)
+			fmt.Printf("http response status code: %s\nroute: %s - %s %s:%s --> Service Id: %s\n", resp.Status,
+				routeResp.Name, routeResp.Methods, routeResp.Protocols, routeResp.Paths, routeResp.Service.Id)
 		} else {
-			fmt.Printf("%s\n", routeResp.Id)
+			fmt.Printf("route: %s - %s %s:%s --> Service Id: %s\n",
+				routeResp.Name, routeResp.Methods, routeResp.Protocols, routeResp.Paths, routeResp.Service.Id)
 		}
 	}
 
