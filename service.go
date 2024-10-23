@@ -277,13 +277,20 @@ func (ks *KongServerDomain) UpdateService(id string, updatedKongService *KongSer
 		return err
 	}
 
+	err = json.Unmarshal(respPayload, &serviceResp)
+	if err != nil {
+		return err
+	}
+
 	if options.jsonOutput {
 		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
 	} else {
 		if options.verbose {
-			fmt.Printf("http response status code: %s\nservice ID: %s\n", resp.Status, serviceResp.Id)
+			fmt.Printf("http response status code: %s\nservice: %s --> %s://%s:%d%s\n", resp.Status,
+				serviceResp.Name, serviceResp.Protocol, serviceResp.Host, serviceResp.Port, serviceResp.Path)
 		} else {
-			fmt.Printf("%s\n", serviceResp.Id)
+			fmt.Printf("service: %s --> %s://%s:%d%s\n",
+				serviceResp.Name, serviceResp.Protocol, serviceResp.Host, serviceResp.Port, serviceResp.Path)
 		}
 	}
 
