@@ -65,7 +65,7 @@ General options are the following:
 - <font color="orange">`-verbose`</font> - run in verbose mode
 
 The available commands are: status, add, query, list, update, delete and status.
-The Kong entities are: service, route, consumer and plugin.
+The Kong entities are: service, route, consumer, plugin and upstream.
 
 ### Command <font color="green">status</font>
 
@@ -131,6 +131,19 @@ If the plugin is successfully added to **Kong**, `kconf` will return the ID for 
 ```sh
 $ kconf add plugin --name=basic-auth --route-id=0ee7a361-0ac0-4468-b7b9-fc041d9c8ed7 --enabled=true
 590ac321-5061-4f9b-a88a-380209407cff
+```
+
+- <font color="green">**upstream**</font> - add a new upstream.
+This command have the following options:
+  - <font color="orange">`--name={upstream name}`</font> specify upstream name
+  - <font color="orange">`--algorithm={algorithm}`</font> specify algorithm for the upstream
+  - <font color="orange">`--tags={tags}`</font> specify a comma separated list of tags associated to the upstream
+
+If the upstream is successfully added to **Kong**, `kconf` will return the ID for the new upstream.
+
+```sh
+$ kconf add upstream --name=Pedidos --algorithm=round-robin
+a4775f39-0ddf-4d43-a9ee-31451419b812
 ```
 
 ### Command <font color="green">query</font>
@@ -230,7 +243,7 @@ If the service is successfully updated in **Kong**, `kconf` will return the ID f
 
 ```sh
 $ kconf update service --id=3302f59b-4bb0-410c-988b-d7e4e02a8c6e --enabled=false
-3302f59b-4bb0-410c-988b-d7e4e02a8c6e
+service: Consulta-Bin --> https://api.pagar.me:443/bin/v1/499577
 ```
 
 - <font color="green">**route**</font> - update a route by id.
@@ -246,7 +259,7 @@ If the route is successfully updated in **Kong**, `kconf` will return the ID for
 
 ```sh
 $ kconf update route --id=0ee7a361-0ac0-4468-b7b9-fc041d9c8ed7 --protocols=http,https
-0ee7a361-0ac0-4468-b7b9-fc041d9c8ed7
+route: Consulta-Bin - [GET] [http,https]:[/api/v1/bin/499577] --> Service Id: 3302f59b-4bb0-410c-988b-d7e4e02a8c6e
 ```
 
 - <font color="green">**consumer**</font> - update a consumer by id.
@@ -357,7 +370,7 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 
 ### Features backlog (for v0.3 release)
 
-- [ ] Endpoint to add a new upstream
+- [X] ~~Endpoint to add a new upstream~~
 - [ ] Endpoint to get a upstream
 - [ ] Endpoint to get a list of upstreams
 - [ ] Endpoint to update a upstream

@@ -1,0 +1,12 @@
+{
+    "scenario": "03.24",
+    "description": "command add upstream",
+    "option": "-verbose add upstream --name=Pedidos --algorithm=round-robin",
+    "expected-result": {
+        "status": 0,
+        "output": "^new upstream ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "",
+    "post-test-script": "#export UPSTREAM_GUID=\"${REGEX_RESULT}\""
+}

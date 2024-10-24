@@ -166,7 +166,7 @@ func kconf(myKongServer KongServer, command []string, options Options) error {
 func commandAdd(myKongServer KongServer, command []string, options Options) error {
 
 	if len(command) == 0 {
-		return errors.New("missing entity for command add: available entities: service, route")
+		return errors.New("missing entity for command add: available entities: service, route, consumer, plugin, upstream")
 	}
 
 	switch command[0] {
@@ -404,6 +404,32 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		newKongPlugin := NewKongPlugin(name, serviceId, routeId, []KongPluginConfig{}, enabled)
 
 		return myKongServer.AddPlugin(newKongPlugin, options)
+
+	case "upstream":
+		const valuesDelim = ","
+		var name string
+		var algorithm string
+		var tags []string
+
+		for i := 1; i < len(command); i++ {
+			match := nameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				name = match[0][1]
+			}
+
+			match = algorithmRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				algorithm = match[0][1]
+			}
+
+			match = tagsRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				tags = strings.Split(match[0][1], valuesDelim)
+			}
+		}
+		newKongUpstream := NewKongUpstream(name, algorithm, tags)
+
+		return myKongServer.AddUpstream(newKongUpstream, options)
 	}
 
 	return errors.New("invalid entity for command add: " + command[0])

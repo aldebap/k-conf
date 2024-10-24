@@ -1,0 +1,10 @@
+{
+    "scenario": "03.23",
+    "description": "command add upstream without parameters",
+    "option": "add upstream",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] fail sending add upstream command to Kong: 400 Bad Request",
+        "format": "string"
+    }
+}
