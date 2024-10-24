@@ -45,6 +45,8 @@ type KongServer interface {
 	ListPlugins(options Options) error
 	UpdatePlugin(id string, updatedKongPlugin *KongPlugin, options Options) error
 	DeletePlugin(id string, options Options) error
+
+	AddUpstream(newKongUpstream *KongUpstream, options Options) error
 }
 
 // Kong server attributes
