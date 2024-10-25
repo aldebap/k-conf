@@ -1,0 +1,11 @@
+{
+    "scenario": "04.17",
+    "description": "command query upstream",
+    "option": "-verbose query upstream --id=${UPSTREAM_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK$",
+        "format": "regex"
+    },
+    "pre-test-script": "echo \"[debug] scenario 04.17- upstream_id = ${UPSTREAM_GUID}\""
+}

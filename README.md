@@ -192,6 +192,17 @@ $ kconf query plugin --id=590ac321-5061-4f9b-a88a-380209407cff
 590ac321-5061-4f9b-a88a-380209407cff: basic-auth - [grpc grpcs http https ws wss]: serviceId:  ; routeId: 0ee7a361-0ac0-4468-b7b9-fc041d9c8ed7 ; consumerId:
 ```
 
+- <font color="green">**upstream**</font> - query an upstream by id.
+This command have the following options:
+  - <font color="orange">`--id={upstream id}`</font> specify upstream id for the query
+
+If the upstream id exists in **Kong**, `kconf` will return upstream name, algorithm and tags.
+
+```sh
+$ kconf query upstream --id=4cc53f3c-ed42-44f3-8783-4fa8682226da
+upstream: Pedidos --> round-robin ([])
+```
+
 ### Command <font color="green">list</font>
 
 - <font color="green">**service**</font> - list all services.
@@ -371,7 +382,7 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 ### Features backlog (for v0.3 release)
 
 - [X] ~~Endpoint to add a new upstream~~
-- [ ] Endpoint to get a upstream
+- [X] ~~Endpoint to get a upstream~~
 - [ ] Endpoint to get a list of upstreams
 - [ ] Endpoint to update a upstream
 - [ ] Endpoint to delete a upstream
