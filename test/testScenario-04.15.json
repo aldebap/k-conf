@@ -1,0 +1,10 @@
+{
+    "scenario": "04.15",
+    "description": "command query upstream without parameters",
+    "option": "query upstream",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing upstream id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

@@ -121,7 +121,7 @@ func (ks *KongServerDomain) QueryConsumer(id string, options Options) error {
 
 	var consumerURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), consumersResource, id)
 
-	//	send a request to Kong to query the service by id
+	//	send a request to Kong to query the consumer by id
 	resp, err := http.Get(consumerURL)
 	if err != nil {
 		return err

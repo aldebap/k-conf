@@ -1,0 +1,10 @@
+{
+    "scenario": "04.16",
+    "description": "command query non existing upstream",
+    "option": "-verbose query upstream --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] upstream not found",
+        "format": "string"
+    }
+}

@@ -8,5 +8,5 @@
         "format": "regex_id"
     },
     "pre-test-script": "",
-    "post-test-script": "#export UPSTREAM_GUID=\"${REGEX_RESULT}\""
+    "post-test-script": "export UPSTREAM_GUID=\"${REGEX_RESULT}\""
 }
