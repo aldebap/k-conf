@@ -162,3 +162,70 @@ func Test_QueryUpstream(t *testing.T) {
 		}
 	})
 }
+
+// Test_ListUpstream unit tests for ListUpstreams() method
+func Test_ListUpstream(t *testing.T) {
+
+	t.Run(">>> ListUpstream: scenario 1 - internal server error", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		want := errors.New("fail sending list upstreams command to Kong: 500 Internal Server Error")
+		got := kongServer.ListUpstreams(Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want.Error() != got.Error() {
+			t.Errorf("failed checking kong status: error expected: %d result: %d", want, got)
+		}
+	})
+
+	t.Run(">>> ListUpstream: scenario 2 - upstream returned successfuly", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{
+				"data": [
+					{
+						"id": "1343894e-404a-4f9e-a982-9e5c0e9d1733",
+						"name": "Pedidos",
+						"algorithm": "round-robin",
+						"tags": null
+					}
+				],
+				"next": "null"
+			}`))
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		var want error = nil
+		got := kongServer.ListUpstreams(Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want != got {
+			t.Errorf("failed checking kong status: success expected: result: %s", got.Error())
+		}
+	})
+}

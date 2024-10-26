@@ -241,6 +241,15 @@ $ kconf list plugin
 plugin: 590ac321-5061-4f9b-a88a-380209407cff: basic-auth - [grpc grpcs http https ws wss]: serviceId:  ; routeId: 0ee7a361-0ac0-4468-b7b9-fc041d9c8ed7 ; consumerId:
 ```
 
+- <font color="green">**upstream**</font> - list all upstreams.
+This command doesn't have options.
+If there are plugins in **Kong**, `kconf` will return a list of all plugins.
+
+```sh
+$ kconf list upstream
+11e37223-a06b-454e-9658-5c4157c46db3: Pedidos --> round-robin ([])
+```
+
 ### Command <font color="green">update</font>
 
 - <font color="green">**service**</font> - update a service by id.
@@ -383,7 +392,7 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 
 - [X] ~~Endpoint to add a new upstream~~
 - [X] ~~Endpoint to get a upstream~~
-- [ ] Endpoint to get a list of upstreams
+- [X] ~~Endpoint to get a list of upstreams~~
 - [ ] Endpoint to update a upstream
 - [ ] Endpoint to delete a upstream
 - [ ] Endpoint to add a new target

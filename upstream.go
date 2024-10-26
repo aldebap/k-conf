@@ -163,3 +163,58 @@ func (ks *KongServerDomain) QueryUpstream(id string, options Options) error {
 
 	return nil
 }
+
+// list all upstreams
+func (ks *KongServerDomain) ListUpstreams(options Options) error {
+
+	var upstreamURL string = fmt.Sprintf("%s/%s/", ks.ServerURL(), upstreamResource)
+
+	//	send a request to Kong to get a list of all upstreams
+	resp, err := http.Get(upstreamURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending list upstreams command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var upstreamListResp KongUpstreamListResponse
+
+		err = json.Unmarshal(respPayload, &upstreamListResp)
+		if err != nil {
+			return err
+		}
+
+		if len(upstreamListResp.Data) == 0 {
+			if options.verbose {
+				fmt.Printf("%s\nNo upstreams\n", resp.Status)
+			} else {
+				fmt.Printf("No upstreams\n")
+			}
+
+			return nil
+		}
+
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nupstream list\n", resp.Status)
+		}
+
+		for _, upstream := range upstreamListResp.Data {
+			fmt.Printf("%s: %s --> %s (%s)\n", upstream.Id,
+				upstream.Name, upstream.Algorithm, upstream.Tags)
+		}
+	}
+
+	return nil
+}
