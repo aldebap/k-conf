@@ -1,0 +1,10 @@
+{
+    "scenario": "05.7",
+    "description": "command list upstreams",
+    "option": "-verbose list upstream",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK$",
+        "format": "regex"
+    }
+}
