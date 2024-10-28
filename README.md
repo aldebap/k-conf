@@ -199,7 +199,7 @@ This command have the following options:
 If the upstream id exists in **Kong**, `kconf` will return upstream name, algorithm and tags.
 
 ```sh
-$ kconf query upstream --id=4cc53f3c-ed42-44f3-8783-4fa8682226da
+$ kconf query upstream --id=a4775f39-0ddf-4d43-a9ee-31451419b812
 upstream: Pedidos --> round-robin ([])
 ```
 
@@ -247,7 +247,8 @@ If there are plugins in **Kong**, `kconf` will return a list of all plugins.
 
 ```sh
 $ kconf list upstream
-11e37223-a06b-454e-9658-5c4157c46db3: Pedidos --> round-robin ([])
+a4775f39-0ddf-4d43-a9ee-31451419b812: Pedidos --> round-robin ([])
+$ kconf query upstream --id=a4775f39-0ddf-4d43-a9ee-31451419b812
 ```
 
 ### Command <font color="green">update</font>
@@ -308,6 +309,20 @@ If the plugin is successfully updated in **Kong**, `kconf` will return plugin na
 ```sh
 $ kconf update plugin --id=590ac321-5061-4f9b-a88a-380209407cff --enabled=false
 590ac321-5061-4f9b-a88a-380209407cff: basic-auth - [grpc grpcs http https ws wss]: serviceId:  ; routeId: 0ee7a361-0ac0-4468-b7b9-fc041d9c8ed7 ; consumerId:
+```
+
+- <font color="green">**upstream**</font> - update an upstream by id.
+This command have the following options:
+  - <font color="orange">`--id={upstream id}`</font> specify upstream id to be updated
+  - <font color="orange">`--name={upstream name}`</font> specify upstream name
+  - <font color="orange">`--algorithm={algorithm}`</font> specify algorithm for the upstream
+  - <font color="orange">`--tags={tags}`</font> specify a comma separated list of tags associated to the upstream
+
+If the upstream is successfully updated in **Kong**, `kconf` will return upstream name, algorithm and tags.
+
+```sh
+$ kconf update upstream --id=a4775f39-0ddf-4d43-a9ee-31451419b812 --tags=silver-tier
+upstream: Pedidos --> round-robin ([silver-tier])
 ```
 
 ### Command <font color="green">delete</font>
@@ -393,7 +408,7 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 - [X] ~~Endpoint to add a new upstream~~
 - [X] ~~Endpoint to get a upstream~~
 - [X] ~~Endpoint to get a list of upstreams~~
-- [ ] Endpoint to update a upstream
+- [X] ~~Endpoint to update a upstream~~
 - [ ] Endpoint to delete a upstream
 - [ ] Endpoint to add a new target
 - [ ] Endpoint to get a target

@@ -719,6 +719,36 @@ func commandUpdate(myKongServer KongServer, command []string, options Options) e
 		updatedKongPlugin := NewKongPlugin("", serviceId, routeId, nil, enabled)
 
 		return myKongServer.UpdatePlugin(id, updatedKongPlugin, options)
+
+	case "upstream":
+		if len(id) == 0 {
+			return errors.New("missing upstream id: option --id={id} required for this command")
+		}
+
+		const valuesDelim = ","
+		var name string
+		var algorithm string
+		var tags []string
+
+		for i := 1; i < len(command); i++ {
+			match := nameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				name = match[0][1]
+			}
+
+			match = algorithmRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				algorithm = match[0][1]
+			}
+
+			match = tagsRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				tags = strings.Split(match[0][1], valuesDelim)
+			}
+		}
+		updatedKongUpstream := NewKongUpstream(name, algorithm, tags)
+
+		return myKongServer.UpdateUpstream(id, updatedKongUpstream, options)
 	}
 
 	return errors.New("invalid entity for command update: " + command[0])
