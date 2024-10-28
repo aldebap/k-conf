@@ -1,0 +1,10 @@
+{
+    "scenario": "06.18",
+    "description": "command update upstream",
+    "option": "-verbose update upstream --id=${UPSTREAM_GUID} --tags=silver-tier",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK",
+        "format": "regex"
+    }
+}

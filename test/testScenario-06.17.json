@@ -1,0 +1,10 @@
+{
+    "scenario": "06.17",
+    "description": "command update non existing upstream",
+    "option": "-verbose update upstream --id=00000-00000 --enabled=false",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] upstream not found",
+        "format": "regex"
+    }
+}

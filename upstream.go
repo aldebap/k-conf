@@ -116,7 +116,7 @@ func (ks *KongServerDomain) AddUpstream(newKongUpstream *KongUpstream, options O
 	return nil
 }
 
-// query a upstream by Id
+// query an upstream by Id
 func (ks *KongServerDomain) QueryUpstream(id string, options Options) error {
 
 	var upstreamURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), upstreamResource, id)
@@ -213,6 +213,73 @@ func (ks *KongServerDomain) ListUpstreams(options Options) error {
 		for _, upstream := range upstreamListResp.Data {
 			fmt.Printf("%s: %s --> %s (%s)\n", upstream.Id,
 				upstream.Name, upstream.Algorithm, upstream.Tags)
+		}
+	}
+
+	return nil
+}
+
+// update an upstream in Kong
+func (ks *KongServerDomain) UpdateUpstream(id string, updatedKongUpstream *KongUpstream, options Options) error {
+
+	var upstreamURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), upstreamResource, id)
+
+	payload, err := json.Marshal(KongUpstreamRequest{
+		Name:      updatedKongUpstream.name,
+		Algorithm: updatedKongUpstream.algorithm,
+		Tags:      updatedKongUpstream.tags,
+	})
+	if err != nil {
+		return err
+	}
+
+	//	log.Printf("[debug] patch payload: %s", payload)
+
+	req, err := http.NewRequest("PATCH", upstreamURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("upstream not found")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending patch upstream command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var upstreamResp KongUpstreamResponse
+
+	err = json.Unmarshal(respPayload, &upstreamResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nupstream: %s --> %s (%s)\n", resp.Status,
+				upstreamResp.Name, upstreamResp.Algorithm, upstreamResp.Tags)
+		} else {
+			fmt.Printf("upstream: %s --> %s (%s)\n",
+				upstreamResp.Name, upstreamResp.Algorithm, upstreamResp.Tags)
 		}
 	}
 
