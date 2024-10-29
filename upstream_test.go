@@ -317,3 +317,60 @@ func Test_UpdateUpstream(t *testing.T) {
 		}
 	})
 }
+
+// Test_DeleteUpstream unit tests for DeleteUpstream() method
+func Test_DeleteUpstream(t *testing.T) {
+
+	t.Run(">>> DeleteUpstream: scenario 1 - upstream not found", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNotFound)
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		want := errors.New("fail sending delete upstream command to Kong: 404 Not Found")
+		got := kongServer.DeleteUpstream("1234", Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want.Error() != got.Error() {
+			t.Errorf("failed checking kong status: error expected: %d result: %d", want, got)
+		}
+	})
+
+	t.Run(">>> DeleteUpstream: scenario 2 - upstream returned successfuly", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusNoContent)
+			w.Write([]byte(""))
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		var want error = nil
+		got := kongServer.DeleteUpstream("1234", Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want != got {
+			t.Errorf("failed checking kong status: success expected: result: %s", got.Error())
+		}
+	})
+}

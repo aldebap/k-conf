@@ -1,0 +1,10 @@
+{
+    "scenario": "07.11",
+    "description": "command delete upstream without parameters",
+    "option": "delete upstream",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing upstream id: option --id={id} required for this command",
+        "format": "string"
+    }
+}
