@@ -285,3 +285,37 @@ func (ks *KongServerDomain) UpdateUpstream(id string, updatedKongUpstream *KongU
 
 	return nil
 }
+
+// delete a upstream in Kong
+func (ks *KongServerDomain) DeleteUpstream(id string, options Options) error {
+
+	var upstreamURL string = fmt.Sprintf("%s/%s/%s", ks.ServerURL(), upstreamResource, id)
+
+	//	send a request to Kong to delete the upstream by id
+	req, err := http.NewRequest("DELETE", upstreamURL, bytes.NewBuffer([]byte("")))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New("fail sending delete upstream command to Kong: " + resp.Status)
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n{}\n", resp.Status)
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\n", resp.Status)
+		}
+	}
+
+	return nil
+}

@@ -248,7 +248,6 @@ If there are plugins in **Kong**, `kconf` will return a list of all plugins.
 ```sh
 $ kconf list upstream
 a4775f39-0ddf-4d43-a9ee-31451419b812: Pedidos --> round-robin ([])
-$ kconf query upstream --id=a4775f39-0ddf-4d43-a9ee-31451419b812
 ```
 
 ### Command <font color="green">update</font>
@@ -359,6 +358,14 @@ This command have the following options:
 kconf delete plugin --id=590ac321-5061-4f9b-a88a-380209407cff
 ```
 
+- <font color="green">**upstream**</font> - delete a upstream by id.
+This command have the following options:
+  - <font color="orange">`--id={upstream id}`</font> specify upstream id to be deleted
+
+```sh
+kconf delete upstream --id=a4775f39-0ddf-4d43-a9ee-31451419b812
+```
+
 ### Consumer Plugins
 
 - <font color="green">**add consumer-basic-auth**</font> - add basic-auth plugin for a cunsumer.
@@ -409,7 +416,7 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 - [X] ~~Endpoint to get a upstream~~
 - [X] ~~Endpoint to get a list of upstreams~~
 - [X] ~~Endpoint to update a upstream~~
-- [ ] Endpoint to delete a upstream
+- [X] ~~Endpoint to delete a upstream~~
 - [ ] Endpoint to add a new target
 - [ ] Endpoint to get a target
 - [ ] Endpoint to get a list of targets

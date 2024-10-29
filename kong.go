@@ -50,6 +50,7 @@ type KongServer interface {
 	QueryUpstream(id string, options Options) error
 	ListUpstreams(options Options) error
 	UpdateUpstream(id string, updatedKongUpstream *KongUpstream, options Options) error
+	DeleteUpstream(id string, options Options) error
 }
 
 // Kong server attributes

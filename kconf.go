@@ -798,6 +798,13 @@ func commandDelete(myKongServer KongServer, command []string, options Options) e
 		}
 
 		return myKongServer.DeletePlugin(id, options)
+
+	case "upstream":
+		if len(id) == 0 {
+			return errors.New("missing upstream id: option --id={id} required for this command")
+		}
+
+		return myKongServer.DeleteUpstream(id, options)
 	}
 
 	return errors.New("invalid entity for command delete: " + command[0])
