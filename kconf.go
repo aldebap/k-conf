@@ -31,6 +31,7 @@ var (
 	keyRegEx       *regexp.Regexp
 	secretRegEx    *regexp.Regexp
 	ttlRegEx       *regexp.Regexp
+	targetRegEx    *regexp.Regexp
 )
 
 func compileRegExp() error {
@@ -119,6 +120,11 @@ func compileRegExp() error {
 	}
 
 	ttlRegEx, err = regexp.Compile(`^--ttl\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	targetRegEx, err = regexp.Compile(`^--target\s*=\s*(\S.*)\s*$`)
 	if err != nil {
 		return err
 	}
@@ -430,6 +436,29 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		newKongUpstream := NewKongUpstream(name, algorithm, tags)
 
 		return myKongServer.AddUpstream(newKongUpstream, options)
+
+	case "upstream-target":
+		var id string
+		var target string
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+
+			match = targetRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				target = match[0][1]
+			}
+		}
+
+		if len(id) == 0 {
+			return errors.New("missing upstream id: option --id={id} required for this command")
+		}
+		newKongUpstreamTarget := NewKongUpstreamTarget(target)
+
+		return myKongServer.AddUpstreamTarget(id, newKongUpstreamTarget, options)
 	}
 
 	return errors.New("invalid entity for command add: " + command[0])
