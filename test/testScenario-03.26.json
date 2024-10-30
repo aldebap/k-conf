@@ -1,0 +1,12 @@
+{
+    "scenario": "03.26",
+    "description": "command add upstream target",
+    "option": "-verbose add upstream-target --id=${UPSTREAM_GUID} --target=192.168.68.107:8080",
+    "expected-result": {
+        "status": 0,
+        "output": "^new upstream target ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "",
+    "post-test-script": "export UPSTREAMTARGET_GUID=\"${REGEX_RESULT}\""
+}

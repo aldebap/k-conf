@@ -1,0 +1,10 @@
+{
+    "scenario": "03.25",
+    "description": "command add upstream target without parameters",
+    "option": "add upstream-target",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing upstream id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

@@ -146,6 +146,18 @@ $ kconf add upstream --name=Pedidos --algorithm=round-robin
 a4775f39-0ddf-4d43-a9ee-31451419b812
 ```
 
+- <font color="green">**upstream-target**</font> - add a new upstream target.
+This command have the following options:
+  - <font color="orange">`--id={upstream id}`</font> specify upstream id for the add
+  - <font color="orange">`--target={target address}`</font> specify upstream target address
+
+If the upstream is successfully added to **Kong**, `kconf` will return the ID for the new upstream target.
+
+```sh
+$ kconf add upstream-target --id=a4775f39-0ddf-4d43-a9ee-31451419b812 --target=192.168.68.107:8080
+a0110455-2652-4e83-9202-9ca212277abc
+```
+
 ### Command <font color="green">query</font>
 
 - <font color="green">**service**</font> - query a service by id.
@@ -417,7 +429,7 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 - [X] ~~Endpoint to get a list of upstreams~~
 - [X] ~~Endpoint to update a upstream~~
 - [X] ~~Endpoint to delete a upstream~~
-- [ ] Endpoint to add a new target
+- [X] ~~Endpoint to add a new target~~
 - [ ] Endpoint to get a target
 - [ ] Endpoint to get a list of targets
 - [ ] Endpoint to update a target
