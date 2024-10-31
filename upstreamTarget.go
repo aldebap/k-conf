@@ -105,3 +105,51 @@ func (ks *KongServerDomain) AddUpstreamTarget(id string, newKongUpstreamTarget *
 
 	return nil
 }
+
+// query an upstream target by Id
+func (ks *KongServerDomain) QueryUpstreamTarget(upstreamId string, id string, options Options) error {
+
+	var upstreamTargetURL string = fmt.Sprintf("%s/%s/%s/%s/%s", ks.ServerURL(), upstreamResource, upstreamId, upstreamTargetResource, id)
+
+	//	send a request to Kong to query the upstream target by id
+	resp, err := http.Get(upstreamTargetURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("upstream target not found")
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending query upstream target command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var upstreamTargetResp KongUpstreamTargetResponse
+
+		err = json.Unmarshal(respPayload, &upstreamTargetResp)
+		if err != nil {
+			return err
+		}
+
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nupstream target: %s\n", resp.Status,
+				upstreamTargetResp.Target)
+		} else {
+			fmt.Printf("upstream target: %s\n",
+				upstreamTargetResp.Target)
+		}
+	}
+
+	return nil
+}

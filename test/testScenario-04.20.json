@@ -1,0 +1,10 @@
+{
+    "scenario": "04.20",
+    "description": "command query non existing upstream target",
+    "option": "-verbose query upstream-target --upstream-id=${UPSTREAM_GUID} --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] upstream target not found",
+        "format": "string"
+    }
+}
