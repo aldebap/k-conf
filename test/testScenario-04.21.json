@@ -1,0 +1,10 @@
+{
+    "scenario": "04.21",
+    "description": "command query upstream",
+    "option": "-verbose query upstream-target --upstream-id=${UPSTREAM_GUID} --id=${UPSTREAMTARGET_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 200 OK$",
+        "format": "regex"
+    }
+}

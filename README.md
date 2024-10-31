@@ -215,6 +215,18 @@ $ kconf query upstream --id=a4775f39-0ddf-4d43-a9ee-31451419b812
 upstream: Pedidos --> round-robin ([])
 ```
 
+- <font color="green">**upstream-target**</font> - query an upstream target by id.
+This command have the following options:
+  - <font color="orange">`--upstream-id={upstream id}`</font> specify upstream id for the query
+  - <font color="orange">`--id={upstream target id}`</font> specify upstream target id for the query
+
+If the upstream id exists in **Kong**, `kconf` will return target.
+
+```sh
+$ kconf query upstream-target --upstream-id=a4775f39-0ddf-4d43-a9ee-31451419b812 --id=a0110455-2652-4e83-9202-9ca212277abc
+192.168.68.107:8080
+```
+
 ### Command <font color="green">list</font>
 
 - <font color="green">**service**</font> - list all services.
@@ -430,7 +442,7 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 - [X] ~~Endpoint to update a upstream~~
 - [X] ~~Endpoint to delete a upstream~~
 - [X] ~~Endpoint to add a new target~~
-- [ ] Endpoint to get a target
+- [X] ~~Endpoint to get a target~~
 - [ ] Endpoint to get a list of targets
 - [ ] Endpoint to update a target
 - [ ] Endpoint to delete a target

@@ -14,24 +14,25 @@ import (
 )
 
 var (
-	nameRegEx      *regexp.Regexp
-	urlRegEx       *regexp.Regexp
-	enabledRegEx   *regexp.Regexp
-	protocolsRegEx *regexp.Regexp
-	methodsRegEx   *regexp.Regexp
-	pathsRegEx     *regexp.Regexp
-	serviceIdRegEx *regexp.Regexp
-	customIdRegEx  *regexp.Regexp
-	userNameRegEx  *regexp.Regexp
-	tagsRegEx      *regexp.Regexp
-	routeIdRegEx   *regexp.Regexp
-	idRegEx        *regexp.Regexp
-	passwordRegEx  *regexp.Regexp
-	algorithmRegEx *regexp.Regexp
-	keyRegEx       *regexp.Regexp
-	secretRegEx    *regexp.Regexp
-	ttlRegEx       *regexp.Regexp
-	targetRegEx    *regexp.Regexp
+	nameRegEx       *regexp.Regexp
+	urlRegEx        *regexp.Regexp
+	enabledRegEx    *regexp.Regexp
+	protocolsRegEx  *regexp.Regexp
+	methodsRegEx    *regexp.Regexp
+	pathsRegEx      *regexp.Regexp
+	serviceIdRegEx  *regexp.Regexp
+	customIdRegEx   *regexp.Regexp
+	userNameRegEx   *regexp.Regexp
+	tagsRegEx       *regexp.Regexp
+	routeIdRegEx    *regexp.Regexp
+	idRegEx         *regexp.Regexp
+	passwordRegEx   *regexp.Regexp
+	algorithmRegEx  *regexp.Regexp
+	keyRegEx        *regexp.Regexp
+	secretRegEx     *regexp.Regexp
+	ttlRegEx        *regexp.Regexp
+	upstreamIdRegEx *regexp.Regexp
+	targetRegEx     *regexp.Regexp
 )
 
 func compileRegExp() error {
@@ -120,6 +121,11 @@ func compileRegExp() error {
 	}
 
 	ttlRegEx, err = regexp.Compile(`^--ttl\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	upstreamIdRegEx, err = regexp.Compile(`^--upstream-id\s*=\s*(\S.*)\s*$`)
 	if err != nil {
 		return err
 	}
@@ -551,6 +557,33 @@ func commandQuery(myKongServer KongServer, command []string, options Options) er
 		}
 
 		return myKongServer.QueryUpstream(id, options)
+
+	case "upstream-target":
+		var upstreamId string
+		var id string
+
+		for i := 1; i < len(command); i++ {
+
+			match := upstreamIdRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				upstreamId = match[0][1]
+			}
+
+			match = idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+		}
+
+		if len(upstreamId) == 0 {
+			return errors.New("missing upstream id: option --upstream-id={id} required for this command")
+		}
+
+		if len(id) == 0 {
+			return errors.New("missing upstream target id: option --id={id} required for this command")
+		}
+
+		return myKongServer.QueryUpstreamTarget(upstreamId, id, options)
 	}
 
 	return errors.New("invalid entity for command query: " + command[0])
