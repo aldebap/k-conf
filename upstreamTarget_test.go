@@ -158,3 +158,68 @@ func Test_QueryUpstreamTarget(t *testing.T) {
 		}
 	})
 }
+
+// Test_ListUpstreamTarget unit tests for ListUpstreamTargets() method
+func Test_ListUpstreamTarget(t *testing.T) {
+
+	t.Run(">>> ListUpstreamTarget: scenario 1 - internal server error", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusInternalServerError)
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		want := errors.New("fail sending list upstream targets command to Kong: 500 Internal Server Error")
+		got := kongServer.ListUpstreamTargets("1234", Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want.Error() != got.Error() {
+			t.Errorf("failed checking kong status: error expected: %d result: %d", want, got)
+		}
+	})
+
+	t.Run(">>> ListUpstreamTarget: scenario 2 - upstream targets uccessfuly", func(t *testing.T) {
+
+		//	mock for Kong Admin
+		var mockKongAdmin *httptest.Server = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			w.Write([]byte(`{
+				"data": [
+					{
+						"id": "1343894e-404a-4f9e-a982-9e5c0e9d1733",
+						"target": "192.168.40.27:8080"
+					}
+				],
+				"next": "null"
+			}`))
+		}))
+		defer mockKongAdmin.Close()
+
+		//	connect to mock server
+		kongServer := NewKongServer(mockKongAdmin.URL, 0)
+		if kongServer == nil {
+			t.Errorf("fail connectring to mock Kong Admin")
+		}
+
+		var want error = nil
+		got := kongServer.ListUpstreamTargets("1234", Options{
+			verbose:    false,
+			jsonOutput: false,
+		})
+
+		//	check the invocation result
+		if want != got {
+			t.Errorf("failed checking kong status: success expected: result: %s", got.Error())
+		}
+	})
+}

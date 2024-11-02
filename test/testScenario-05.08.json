@@ -1,0 +1,10 @@
+{
+    "scenario": "05.8",
+    "description": "command list upstream targets without id parameter",
+    "option": "-verbose list upstream-target",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing upstream id: option --upstream-id={id} required for this command",
+        "format": "regex"
+    }
+}

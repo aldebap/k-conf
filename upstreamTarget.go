@@ -50,9 +50,9 @@ const (
 )
 
 // add a new upstreamTarget to Kong
-func (ks *KongServerDomain) AddUpstreamTarget(id string, newKongUpstreamTarget *KongUpstreamTarget, options Options) error {
+func (ks *KongServerDomain) AddUpstreamTarget(upstreamId string, newKongUpstreamTarget *KongUpstreamTarget, options Options) error {
 
-	var upstreamTargetURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), upstreamResource, id, upstreamTargetResource)
+	var upstreamTargetURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), upstreamResource, upstreamId, upstreamTargetResource)
 
 	payload, err := json.Marshal(KongUpstreamTargetRequest{
 		Target: newKongUpstreamTarget.target,
@@ -148,6 +148,61 @@ func (ks *KongServerDomain) QueryUpstreamTarget(upstreamId string, id string, op
 		} else {
 			fmt.Printf("upstream target: %s\n",
 				upstreamTargetResp.Target)
+		}
+	}
+
+	return nil
+}
+
+// list all upstreams
+func (ks *KongServerDomain) ListUpstreamTargets(upstreamId string, options Options) error {
+
+	var upstreamTargetURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), upstreamResource, upstreamId, upstreamTargetResource)
+
+	//	send a request to Kong to get a list of all upstream targets
+	resp, err := http.Get(upstreamTargetURL)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("fail sending list upstream targets command to Kong: " + resp.Status)
+	}
+
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		var upstreamTargetListResp KongUpstreamTargetListResponse
+
+		err = json.Unmarshal(respPayload, &upstreamTargetListResp)
+		if err != nil {
+			return err
+		}
+
+		if len(upstreamTargetListResp.Data) == 0 {
+			if options.verbose {
+				fmt.Printf("%s\nNo upstream targets\n", resp.Status)
+			} else {
+				fmt.Printf("No upstream targets\n")
+			}
+
+			return nil
+		}
+
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nupstream target list\n", resp.Status)
+		}
+
+		for _, upstreamTarget := range upstreamTargetListResp.Data {
+			fmt.Printf("%s: %s\n", upstreamTarget.Id,
+				upstreamTarget.Target)
 		}
 	}
 
