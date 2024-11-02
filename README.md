@@ -267,11 +267,22 @@ plugin: 590ac321-5061-4f9b-a88a-380209407cff: basic-auth - [grpc grpcs http http
 
 - <font color="green">**upstream**</font> - list all upstreams.
 This command doesn't have options.
-If there are plugins in **Kong**, `kconf` will return a list of all plugins.
+If there are upstreams in **Kong**, `kconf` will return a list of all upstreams.
 
 ```sh
 $ kconf list upstream
 a4775f39-0ddf-4d43-a9ee-31451419b812: Pedidos --> round-robin ([])
+```
+
+- <font color="green">**upstream-target**</font> - list all targets for an upstream by id.
+This command have the following options:
+  - <font color="orange">`--upstream-id={upstream id}`</font> specify upstream id for the query
+
+If there are targets in **Kong** for specified upstream, `kconf` will return a list of all targets.
+
+```sh
+$ kconf list upstream-targets --upstream-id=a4775f39-0ddf-4d43-a9ee-31451419b812
+192.168.68.107:8080
 ```
 
 ### Command <font color="green">update</font>

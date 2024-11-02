@@ -444,13 +444,13 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		return myKongServer.AddUpstream(newKongUpstream, options)
 
 	case "upstream-target":
-		var id string
+		var upstreamId string
 		var target string
 
 		for i := 1; i < len(command); i++ {
-			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			match := upstreamIdRegEx.FindAllStringSubmatch(command[i], -1)
 			if len(match) == 1 {
-				id = match[0][1]
+				upstreamId = match[0][1]
 			}
 
 			match = targetRegEx.FindAllStringSubmatch(command[i], -1)
@@ -459,12 +459,12 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 			}
 		}
 
-		if len(id) == 0 {
-			return errors.New("missing upstream id: option --id={id} required for this command")
+		if len(upstreamId) == 0 {
+			return errors.New("missing upstream id: option --upstream-id={id} required for this command")
 		}
 		newKongUpstreamTarget := NewKongUpstreamTarget(target)
 
-		return myKongServer.AddUpstreamTarget(id, newKongUpstreamTarget, options)
+		return myKongServer.AddUpstreamTarget(upstreamId, newKongUpstreamTarget, options)
 	}
 
 	return errors.New("invalid entity for command add: " + command[0])
@@ -611,6 +611,23 @@ func commandList(myKongServer KongServer, command []string, options Options) err
 
 	case "upstream":
 		return myKongServer.ListUpstreams(options)
+
+	case "upstream-target":
+		var upstreamId string
+
+		for i := 1; i < len(command); i++ {
+
+			match := upstreamIdRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				upstreamId = match[0][1]
+			}
+		}
+
+		if len(upstreamId) == 0 {
+			return errors.New("missing upstream id: option --upstream-id={id} required for this command")
+		}
+
+		return myKongServer.ListUpstreamTargets(upstreamId, options)
 	}
 
 	return errors.New("invalid entity for command list: " + command[0])

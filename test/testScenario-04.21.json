@@ -1,6 +1,6 @@
 {
     "scenario": "04.21",
-    "description": "command query upstream",
+    "description": "command query upstream target",
     "option": "-verbose query upstream-target --upstream-id=${UPSTREAM_GUID} --id=${UPSTREAMTARGET_GUID}",
     "expected-result": {
         "status": 0,
