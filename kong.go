@@ -55,6 +55,7 @@ type KongServer interface {
 	AddUpstreamTarget(upstreamId string, newKongUpstreamTarget *KongUpstreamTarget, options Options) error
 	QueryUpstreamTarget(upstreamId string, id string, options Options) error
 	ListUpstreamTargets(upstreamId string, options Options) error
+	DeleteUpstreamTarget(upstreamId string, id string, options Options) error
 }
 
 // Kong server attributes

@@ -41,16 +41,19 @@ jobs:
         shell: bash
         run: |
           cd ${HOME_PATH}
+          echo
           ./cmd/build.sh
 
       - name: Unit Tests
         shell: bash
         run: |
           cd ${HOME_PATH}
+          echo
           ./cmd/unit-test.sh
 
       - name: Functional Tests
         shell: bash
         run: |
           cd ${HOME_PATH}
+          echo
           ./cmd/functional-test.sh --start-kong

@@ -1,0 +1,10 @@
+{
+    "scenario": "07.16",
+    "description": "command delete upstream",
+    "option": "-verbose delete upstream --id=${UPSTREAM_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 204 No Content$",
+        "format": "regex"
+    }
+}

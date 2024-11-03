@@ -884,6 +884,27 @@ func commandDelete(myKongServer KongServer, command []string, options Options) e
 		}
 
 		return myKongServer.DeleteUpstream(id, options)
+
+	case "upstream-target":
+		var upstreamId string
+
+		for i := 1; i < len(command); i++ {
+
+			match := upstreamIdRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				upstreamId = match[0][1]
+			}
+		}
+
+		if len(upstreamId) == 0 {
+			return errors.New("missing upstream id: option --upstream-id={id} required for this command")
+		}
+
+		if len(id) == 0 {
+			return errors.New("missing upstream target id: option --id={id} required for this command")
+		}
+
+		return myKongServer.DeleteUpstreamTarget(upstreamId, id, options)
 	}
 
 	return errors.New("invalid entity for command delete: " + command[0])
