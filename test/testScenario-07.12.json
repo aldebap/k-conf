@@ -1,10 +1,10 @@
 {
     "scenario": "07.12",
-    "description": "command delete upstream",
-    "option": "-verbose delete upstream --id=${UPSTREAM_GUID}",
+    "description": "command delete upstream target without id parameter",
+    "option": "delete upstream-target --upstream-id=${UPSTREAM_GUID}",
     "expected-result": {
-        "status": 0,
-        "output": "^http response status code: 204 No Content$",
-        "format": "regex"
+        "status": 255,
+        "output": "[error] missing upstream target id: option --id={id} required for this command",
+        "format": "string"
     }
 }

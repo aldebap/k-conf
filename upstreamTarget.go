@@ -208,3 +208,37 @@ func (ks *KongServerDomain) ListUpstreamTargets(upstreamId string, options Optio
 
 	return nil
 }
+
+// delete a upstream target in Kong
+func (ks *KongServerDomain) DeleteUpstreamTarget(upstreamId string, id string, options Options) error {
+
+	var upstreamTargetURL string = fmt.Sprintf("%s/%s/%s/%s/%s", ks.ServerURL(), upstreamResource, upstreamId, upstreamTargetResource, id)
+
+	//	send a request to Kong to delete the upstream target by id
+	req, err := http.NewRequest("DELETE", upstreamTargetURL, bytes.NewBuffer([]byte("")))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusNoContent {
+		return errors.New("fail sending delete upstream target command to Kong: " + resp.Status)
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n{}\n", resp.Status)
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\n", resp.Status)
+		}
+	}
+
+	return nil
+}

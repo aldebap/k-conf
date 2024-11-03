@@ -1,0 +1,10 @@
+{
+    "scenario": "07.13",
+    "description": "command delete non existing upstream target",
+    "option": "delete upstream-target --upstream-id=${UPSTREAM_GUID} --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] fail sending delete upstream target command to Kong: 404 Not Found",
+        "format": "string"
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "scenario": "07.14",
+    "description": "command delete upstream target",
+    "option": "-verbose delete upstream-target --upstream-id=${UPSTREAM_GUID} --id=${UPSTREAMTARGET_GUID}",
+    "expected-result": {
+        "status": 0,
+        "output": "^http response status code: 204 No Content$",
+        "format": "regex"
+    },
+    "pre-test-script": "echo \"[debug] scenario 07.14- upstream_id = ${UPSTREAM_GUID} / target_id = ${UPSTREAMTARGET_GUID}\""
+}

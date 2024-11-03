@@ -163,6 +163,12 @@ TEST_SCRIPT
         fi
     done
 
+    #   stop Kong afterwards
+    if [ "${START_KONG}" == 'true' ]
+    then
+        . cmd/stopKong.sh
+    fi
+
     #   final results
     echo -e "[run-test] ${SUCCESSFUL_TESTS} successful tests"
 
@@ -170,12 +176,6 @@ TEST_SCRIPT
     then
         echo -e "[run-test] ${RED}${FAILED_TESTS} failed tests"
         return 1
-    fi
-
-    #   stop Kong afterwards
-    if [ "${START_KONG}" == 'true' ]
-    then
-        . cmd/stopKong.sh
     fi
 
     return 0
