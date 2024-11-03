@@ -393,12 +393,21 @@ This command have the following options:
 kconf delete plugin --id=590ac321-5061-4f9b-a88a-380209407cff
 ```
 
-- <font color="green">**upstream**</font> - delete a upstream by id.
+- <font color="green">**upstream**</font> - delete an upstream by id.
 This command have the following options:
   - <font color="orange">`--id={upstream id}`</font> specify upstream id to be deleted
 
 ```sh
 kconf delete upstream --id=a4775f39-0ddf-4d43-a9ee-31451419b812
+```
+
+- <font color="green">**upstream-target**</font> - delete an upstream target by id.
+This command have the following options:
+  - <font color="orange">`--upstream-id={upstream id}`</font> specify upstream id the target belongs to
+  - <font color="orange">`--id={upstream target id}`</font> specify upstream target id to be delete
+
+```sh
+kconf delete upstream-target --upstream-id=a4775f39-0ddf-4d43-a9ee-31451419b812 --id=a0110455-2652-4e83-9202-9ca212277abc
 ```
 
 ### Consumer Plugins
@@ -454,9 +463,9 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 - [X] ~~Endpoint to delete a upstream~~
 - [X] ~~Endpoint to add a new target~~
 - [X] ~~Endpoint to get a target~~
-- [ ] Endpoint to get a list of targets
-- [ ] Endpoint to update a target
-- [ ] Endpoint to delete a target
+- [X] ~~Endpoint to get a list of targets~~
+- [X] ~~Endpoint to update a target~~
+- [X] ~~Endpoint to delete a target~~
 - [ ] Endpoint to add a IP Restriction plugin for a consumer
 - [ ] Endpoint to add a Rate Limit plugin for a consumer
 - [ ] Endpoint to add a Request Size Limit plugin for a consumer
