@@ -96,9 +96,10 @@ type KongPluginListResponse struct {
 const (
 	pluginsResource string = "plugins"
 
-	basicAuthPlugins string = "basic-auth"
-	keyAuthPlugins   string = "key-auth"
-	jwtPlugins       string = "jwt"
+	basicAuthPlugins     string = "basic-auth"
+	keyAuthPlugins       string = "key-auth"
+	jwtPlugins           string = "jwt"
+	IPRestrictionPlugins string = "ip-restriction"
 )
 
 // add a new plugin to Kong

@@ -1,0 +1,10 @@
+{
+    "scenario": "03.27",
+    "description": "command add consumer-ip-restriction without parameters",
+    "option": "add consumer-ip-restriction",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}

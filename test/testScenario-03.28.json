@@ -1,0 +1,10 @@
+{
+    "scenario": "03.28",
+    "description": "command add consumer-ip-restriction with non existing consumer",
+    "option": "add consumer-ip-restriction --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "string"
+    }
+}
