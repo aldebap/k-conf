@@ -323,23 +323,26 @@ type KongIPRestrictionPluginConfig struct {
 
 // kong consumer JWT request payload
 type KongConsumerIPRestrictionRequest struct {
-	Name   string                         `json:"name,omitempty"`
-	Config *KongIPRestrictionPluginConfig `json:"config,omitempty"`
+	Name         string                         `json:"name,omitempty"`
+	InstanceName string                         `json:"instance_name,omitempty"`
+	Config       *KongIPRestrictionPluginConfig `json:"config,omitempty"`
 }
 
 // kong consumer JWT response payload
 type KongConsumerIPRestrictionResponse struct {
-	Id     string                        `json:"id"`
-	Name   string                        `json:"name,omitempty"`
-	Config KongIPRestrictionPluginConfig `json:"config,omitempty"`
+	Id           string                        `json:"id"`
+	Name         string                        `json:"name,omitempty"`
+	InstanceName string                        `json:"instance_name,omitempty"`
+	Config       KongIPRestrictionPluginConfig `json:"config,omitempty"`
 }
 
 func (ks *KongServerDomain) AddConsumerIPRestriction(id string, newKongIPRestrictionConfig *KongIPRestrictionConfig, options Options) error {
 
-	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, IPRestrictionPlugins)
+	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, pluginsResource)
 
 	payload, err := json.Marshal(KongConsumerIPRestrictionRequest{
-		Name: newKongIPRestrictionConfig.name,
+		Name:         IPRestrictionPlugins,
+		InstanceName: newKongIPRestrictionConfig.name,
 		Config: &KongIPRestrictionPluginConfig{
 			Allow: newKongIPRestrictionConfig.config.allow,
 			Deny:  newKongIPRestrictionConfig.config.deny,
@@ -348,6 +351,9 @@ func (ks *KongServerDomain) AddConsumerIPRestriction(id string, newKongIPRestric
 	if err != nil {
 		return err
 	}
+
+	//log.Printf("[debug] URL: %s", consumerPluginURL)
+	//log.Printf("[debug] post payload: %s", payload)
 
 	req, err := http.NewRequest("POST", consumerPluginURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {

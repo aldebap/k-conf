@@ -412,7 +412,7 @@ kconf delete upstream-target --upstream-id=a4775f39-0ddf-4d43-a9ee-31451419b812 
 
 ### Consumer Plugins
 
-- <font color="green">**add consumer-basic-auth**</font> - add basic-auth plugin for a cunsumer.
+- <font color="green">**add consumer-basic-auth**</font> - add basic-auth plugin for a consumer.
 This command have the following options:
   - <font color="orange">`--id={consumer id}`</font> specify consumer id to add the plugin
   - <font color="orange">`--user-name={user name}`</font> specify user name for the plugin
@@ -425,7 +425,7 @@ $ kconf add consumer-basic-auth --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --user
 a0229bef-dafe-4060-87ed-8a02d746d425
 ```
 
-- <font color="green">**add consumer-key-auth**</font> - add key-auth plugin for a cunsumer.
+- <font color="green">**add consumer-key-auth**</font> - add key-auth plugin for a consumer.
 This command have the following options:
   - <font color="orange">`--id={consumer id}`</font> specify consumer id to add the plugin
   - <font color="orange">`--key={auth key}`</font> specify auth key for the plugin
@@ -438,7 +438,7 @@ $ kconf add consumer-key-auth --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --key=d5
 bd90e0bc-0ebd-428d-925e-081ff0503a4d
 ```
 
-- <font color="green">**add consumer-jwt**</font> - add JWT plugin for a cunsumer.
+- <font color="green">**add consumer-jwt**</font> - add JWT plugin for a consumer.
 This command have the following options:
   - <font color="orange">`--id={consumer id}`</font> specify consumer id to add the plugin
   - <font color="orange">`--algorithm={algorithm}`</font> specify algorithm for the plugin
@@ -449,6 +449,20 @@ If the plugin is successfully added to **Kong**, `kconf` will return the ID for 
 
 ```sh
 $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=HS256 --key=5ab5ae42-6227-4f49-a354-6eda3e19ff99 --secret=ff6d73d4-5f53-405a-8a5d-b2f03f405b14
+845ffee6-cd9e-4149-b2bc-13a251770306
+```
+
+- <font color="green">**add consumer-ip-restriction**</font> - add IP Restriction plugin for a consumer.
+This command have the following options:
+  - <font color="orange">`--id={consumer id}`</font> specify consumer id to add the plugin
+  - <font color="orange">`--name={name}`</font> specify instance name for the plugin
+  - <font color="orange">`--allow={tags}`</font> specify a comma separated list of IPs to allow access
+  - <font color="orange">`--deny={tags}`</font> specify a comma separated list of IPs to deny access
+
+If the plugin is successfully added to **Kong**, `kconf` will return the ID for the new plugin.
+
+```sh
+$ kconf add consumer-ip-restriction --id=3791a990-2adb-453c-a7ca-c5b5fd7a97ac --name=block-attackers --deny=192.168.40.27
 845ffee6-cd9e-4149-b2bc-13a251770306
 ```
 
@@ -466,7 +480,7 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 - [X] ~~Endpoint to get a list of targets~~
 - [X] ~~Endpoint to update a target~~
 - [X] ~~Endpoint to delete a target~~
-- [ ] Endpoint to add a IP Restriction plugin for a consumer
+- [X] ~~Endpoint to add a IP Restriction plugin for a consumer~~
 - [ ] Endpoint to add a Rate Limit plugin for a consumer
 - [ ] Endpoint to add a Request Size Limit plugin for a consumer
 - [ ] Endpoint to add a Syslog plugin for a consumer
@@ -486,3 +500,4 @@ $ kconf add consumer-jwt --id=7cab7e0b-3d6a-4079-aeaa-d51ab8fd2cab --algorithm=H
 - [ ] Endpoint to add a File Log plugin for a consumer
 - [ ] Endpoint to add a HTTP Log plugin for a consumer
 - [ ] Add parameter to Add Plugin command to specify plugin config
+- [ ] check if IPRestriction plugin should be associated with routes instead of consumers
