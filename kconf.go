@@ -33,6 +33,8 @@ var (
 	ttlRegEx        *regexp.Regexp
 	upstreamIdRegEx *regexp.Regexp
 	targetRegEx     *regexp.Regexp
+	allowRegEx      *regexp.Regexp
+	denyRegEx       *regexp.Regexp
 )
 
 func compileRegExp() error {
@@ -131,6 +133,16 @@ func compileRegExp() error {
 	}
 
 	targetRegEx, err = regexp.Compile(`^--target\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	allowRegEx, err = regexp.Compile(`^--allow\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	denyRegEx, err = regexp.Compile(`^--deny\s*=\s*(\S.*)\s*$`)
 	if err != nil {
 		return err
 	}
@@ -376,6 +388,42 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		newKongJWTConfig := NewKongJWTConfig(algorithm, key, secret)
 
 		return myKongServer.AddConsumerJWT(id, newKongJWTConfig, options)
+
+	case "consumer-ip-restriction":
+		const valuesDelim = ","
+		var id string
+		var name string
+		var allow []string
+		var deny []string
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+
+			match = nameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				name = match[0][1]
+			}
+
+			match = allowRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				allow = strings.Split(match[0][1], valuesDelim)
+			}
+
+			match = denyRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				deny = strings.Split(match[0][1], valuesDelim)
+			}
+		}
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		newKongIPRestrictionConfig := NewKongIPRestrictionConfig(name, allow, deny)
+
+		return myKongServer.AddConsumerIPRestriction(id, newKongIPRestrictionConfig, options)
 
 	case "plugin":
 		var name string

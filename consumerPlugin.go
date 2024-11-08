@@ -44,7 +44,7 @@ type KongConsumerBasicAuthResponse struct {
 // add a new consumer to Kong
 func (ks *KongServerDomain) AddConsumerBasicAuth(id string, newKongBasicAuthConfig *KongBasicAuthConfig, options Options) error {
 
-	var consumerBasicAuthURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, basicAuthPlugins)
+	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, basicAuthPlugins)
 
 	payload, err := json.Marshal(KongConsumerBasicAuthRequest{
 		UserName: newKongBasicAuthConfig.userName,
@@ -54,7 +54,7 @@ func (ks *KongServerDomain) AddConsumerBasicAuth(id string, newKongBasicAuthConf
 		return err
 	}
 
-	req, err := http.NewRequest("POST", consumerBasicAuthURL, bytes.NewBuffer([]byte(payload)))
+	req, err := http.NewRequest("POST", consumerPluginURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
 		return err
 	}
@@ -131,7 +131,7 @@ type KongConsumerKeyAuthResponse struct {
 
 func (ks *KongServerDomain) AddConsumerKeyAuth(id string, newKongKeyAuthConfig *KongKeyAuthConfig, options Options) error {
 
-	var consumerBasicAuthURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, keyAuthPlugins)
+	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, keyAuthPlugins)
 
 	payload, err := json.Marshal(KongConsumerKeyAuthRequest{
 		Key: newKongKeyAuthConfig.key,
@@ -141,7 +141,7 @@ func (ks *KongServerDomain) AddConsumerKeyAuth(id string, newKongKeyAuthConfig *
 		return err
 	}
 
-	req, err := http.NewRequest("POST", consumerBasicAuthURL, bytes.NewBuffer([]byte(payload)))
+	req, err := http.NewRequest("POST", consumerPluginURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
 		return err
 	}
@@ -231,7 +231,7 @@ type KongConsumerJWTResponse struct {
 
 func (ks *KongServerDomain) AddConsumerJWT(id string, newKongJWTConfig *KongJWTConfig, options Options) error {
 
-	var consumerBasicAuthURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, jwtPlugins)
+	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, jwtPlugins)
 
 	payload, err := json.Marshal(KongConsumerJWTRequest{
 		Algorithm: newKongJWTConfig.algorithm,
@@ -242,7 +242,7 @@ func (ks *KongServerDomain) AddConsumerJWT(id string, newKongJWTConfig *KongJWTC
 		return err
 	}
 
-	req, err := http.NewRequest("POST", consumerBasicAuthURL, bytes.NewBuffer([]byte(payload)))
+	req, err := http.NewRequest("POST", consumerPluginURL, bytes.NewBuffer([]byte(payload)))
 	if err != nil {
 		return err
 	}
@@ -285,6 +285,119 @@ func (ks *KongServerDomain) AddConsumerJWT(id string, newKongJWTConfig *KongJWTC
 			fmt.Printf("http response status code: %s\nnew plugin ID: %s\n", resp.Status, consumerJWTResp.Id)
 		} else {
 			fmt.Printf("%s\n", consumerJWTResp.Id)
+		}
+	}
+
+	return nil
+}
+
+// kong plugin config attributes
+type KongIPRestrictionConfigRules struct {
+	allow []string
+	deny  []string
+}
+
+// kong IP Restriction config attributes
+type KongIPRestrictionConfig struct {
+	name   string
+	config *KongIPRestrictionConfigRules
+}
+
+// create a new kong JWT config
+func NewKongIPRestrictionConfig(name string, allow []string, deny []string) *KongIPRestrictionConfig {
+
+	return &KongIPRestrictionConfig{
+		name: name,
+		config: &KongIPRestrictionConfigRules{
+			allow: allow,
+			deny:  deny,
+		},
+	}
+}
+
+// kong plugin config attributes
+type KongIPRestrictionPluginConfig struct {
+	Allow []string `json:"allow,omitempty"`
+	Deny  []string `json:"deny,omitempty"`
+}
+
+// kong consumer JWT request payload
+type KongConsumerIPRestrictionRequest struct {
+	Name         string                         `json:"name,omitempty"`
+	InstanceName string                         `json:"instance_name,omitempty"`
+	Config       *KongIPRestrictionPluginConfig `json:"config,omitempty"`
+}
+
+// kong consumer JWT response payload
+type KongConsumerIPRestrictionResponse struct {
+	Id           string                        `json:"id"`
+	Name         string                        `json:"name,omitempty"`
+	InstanceName string                        `json:"instance_name,omitempty"`
+	Config       KongIPRestrictionPluginConfig `json:"config,omitempty"`
+}
+
+func (ks *KongServerDomain) AddConsumerIPRestriction(id string, newKongIPRestrictionConfig *KongIPRestrictionConfig, options Options) error {
+
+	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, pluginsResource)
+
+	payload, err := json.Marshal(KongConsumerIPRestrictionRequest{
+		Name:         IPRestrictionPlugins,
+		InstanceName: newKongIPRestrictionConfig.name,
+		Config: &KongIPRestrictionPluginConfig{
+			Allow: newKongIPRestrictionConfig.config.allow,
+			Deny:  newKongIPRestrictionConfig.config.deny,
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	//log.Printf("[debug] URL: %s", consumerPluginURL)
+	//log.Printf("[debug] post payload: %s", payload)
+
+	req, err := http.NewRequest("POST", consumerPluginURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("consumer not found")
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return errors.New("fail sending add consumer IP Restriction command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var consumerIPRestrictionResp KongConsumerIPRestrictionResponse
+
+	err = json.Unmarshal(respPayload, &consumerIPRestrictionResp)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nnew plugin ID: %s\n", resp.Status, consumerIPRestrictionResp.Id)
+		} else {
+			fmt.Printf("%s\n", consumerIPRestrictionResp.Id)
 		}
 	}
 

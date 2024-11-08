@@ -1,0 +1,12 @@
+{
+    "scenario": "03.29",
+    "description": "command add consumer-ip-restriction",
+    "option": "-verbose add consumer-ip-restriction --id=${CUSTOMER_GUID} --name=block-attackers --deny=192.168.40.27",
+    "expected-result": {
+        "status": 0,
+        "output": "^new plugin ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "echo \"[debug] scenario 03.29- customer ID = ${CUSTOMER_GUID}\"",
+    "post-test-script": "#export PLUGIN_GUID=\"${REGEX_RESULT}\""
+}
