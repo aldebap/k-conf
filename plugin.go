@@ -100,6 +100,7 @@ const (
 	keyAuthPlugins       string = "key-auth"
 	jwtPlugins           string = "jwt"
 	IPRestrictionPlugins string = "ip-restriction"
+	RateLimitingPlugins  string = "rate-limiting"
 )
 
 // add a new plugin to Kong

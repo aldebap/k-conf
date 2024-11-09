@@ -463,7 +463,22 @@ If the plugin is successfully added to **Kong**, `kconf` will return the ID for 
 
 ```sh
 $ kconf add consumer-ip-restriction --id=3791a990-2adb-453c-a7ca-c5b5fd7a97ac --name=block-attackers --deny=192.168.40.27
-845ffee6-cd9e-4149-b2bc-13a251770306
+7dc2e028-8474-44bf-87e2-b9a423b62a87
+```
+
+- <font color="green">**add consumer-rate-limiting**</font> - add Rate Limiting plugin for a consumer.
+This command have the following options:
+  - <font color="orange">`--id={consumer id}`</font> specify consumer id to add the plugin
+  - <font color="orange">`--name={name}`</font> specify instance name for the plugin
+  - <font color="orange">`--second={tags}`</font> specify the number of requests that can be made per second
+  - <font color="orange">`--minute={tags}`</font> specify the number of requests that can be made per minute
+  - <font color="orange">`--hour={tags}`</font> specify the number of requests that can be made per hour
+
+If the plugin is successfully added to **Kong**, `kconf` will return the ID for the new plugin.
+
+```sh
+$ kconf add consumer-rate-limiting --id=3791a990-2adb-453c-a7ca-c5b5fd7a97ac --name=block-request-overflow --minute=10
+5be30973-f97d-4441-a671-85e35f759b05
 ```
 
 ## kconf backlog
@@ -481,7 +496,7 @@ $ kconf add consumer-ip-restriction --id=3791a990-2adb-453c-a7ca-c5b5fd7a97ac --
 - [X] ~~Endpoint to update a target~~
 - [X] ~~Endpoint to delete a target~~
 - [X] ~~Endpoint to add a IP Restriction plugin for a consumer~~
-- [ ] Endpoint to add a Rate Limit plugin for a consumer
+- [X] ~~Endpoint to add a Rate Limit plugin for a consumer~~
 - [ ] Endpoint to add a Request Size Limit plugin for a consumer
 - [ ] Endpoint to add a Syslog plugin for a consumer
 
@@ -501,3 +516,4 @@ $ kconf add consumer-ip-restriction --id=3791a990-2adb-453c-a7ca-c5b5fd7a97ac --
 - [ ] Endpoint to add a HTTP Log plugin for a consumer
 - [ ] Add parameter to Add Plugin command to specify plugin config
 - [ ] check if IPRestriction plugin should be associated with routes instead of consumers
+- [ ] use an interface for plugin configuration

@@ -39,7 +39,8 @@ type KongServer interface {
 	AddConsumerBasicAuth(id string, newKongBasicAuthConfig *KongBasicAuthConfig, options Options) error
 	AddConsumerKeyAuth(id string, newKongKeyAuthConfig *KongKeyAuthConfig, options Options) error
 	AddConsumerJWT(id string, newKongJWTConfig *KongJWTConfig, options Options) error
-	AddConsumerIPRestriction(id string, newKongIPRestrictionConfig *KongIPRestrictionConfig, options Options) error
+	AddConsumerIPRestriction(id string, newKongIPRestrictionConfig *KongIPRestrictionPlugin, options Options) error
+	AddConsumerRateLimiting(id string, newKongRateLimitingPlugin *KongRateLimitingPlugin, options Options) error
 
 	AddPlugin(newKongPlugin *KongPlugin, options Options) error
 	QueryPlugin(id string, options Options) error

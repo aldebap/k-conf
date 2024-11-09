@@ -1,0 +1,10 @@
+{
+    "scenario": "03.30",
+    "description": "command add consumer-rate-limiting without parameters",
+    "option": "add consumer-rate-limiting",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}
