@@ -1,0 +1,12 @@
+{
+    "scenario": "03.32",
+    "description": "command add consumer-rate-limiting",
+    "option": "-verbose add consumer-rate-limiting --id=${CUSTOMER_GUID} --name=block-request-overflow --minute=10",
+    "expected-result": {
+        "status": 0,
+        "output": "^new plugin ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "echo \"[debug] scenario 03.32- customer ID = ${CUSTOMER_GUID}\"",
+    "post-test-script": "#export PLUGIN_GUID=\"${REGEX_RESULT}\""
+}

@@ -15,6 +15,11 @@ import (
 	"net/http"
 )
 
+// kong consumer ID payload
+type KongConsumerID struct {
+	Id string `json:"id"`
+}
+
 // kong Basic Auth config attributes
 type KongBasicAuthConfig struct {
 	userName string
@@ -30,14 +35,14 @@ func NewKongBasicAuthConfig(userName string, password string) *KongBasicAuthConf
 	}
 }
 
-// kong consumer basic auth request payload
-type KongConsumerBasicAuthRequest struct {
+// kong basic auth request payload
+type KongBasicAuthRequest struct {
 	UserName string `json:"username,omitempty"`
 	Password string `json:"password,omitempty"`
 }
 
-// kong consumer response payload
-type KongConsumerBasicAuthResponse struct {
+// kong response payload
+type KongBasicAuthResponse struct {
 	Id string `json:"id"`
 }
 
@@ -46,7 +51,7 @@ func (ks *KongServerDomain) AddConsumerBasicAuth(id string, newKongBasicAuthConf
 
 	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, basicAuthPlugins)
 
-	payload, err := json.Marshal(KongConsumerBasicAuthRequest{
+	payload, err := json.Marshal(KongBasicAuthRequest{
 		UserName: newKongBasicAuthConfig.userName,
 		Password: newKongBasicAuthConfig.password,
 	})
@@ -83,7 +88,7 @@ func (ks *KongServerDomain) AddConsumerBasicAuth(id string, newKongBasicAuthConf
 		return err
 	}
 
-	var consumerBasicAuthResp KongConsumerBasicAuthResponse
+	var consumerBasicAuthResp KongBasicAuthResponse
 
 	err = json.Unmarshal(respPayload, &consumerBasicAuthResp)
 	if err != nil {
@@ -119,13 +124,13 @@ func NewKongKeyAuthConfig(key string, ttl int64) *KongKeyAuthConfig {
 }
 
 // kong consumer KeyAuth request payload
-type KongConsumerKeyAuthRequest struct {
+type KongKeyAuthRequest struct {
 	Key string `json:"key,omitempty"`
 	Ttl int64  `json:"ttl,omitempty"`
 }
 
 // kong consumer KeyAuth response payload
-type KongConsumerKeyAuthResponse struct {
+type KongKeyAuthResponse struct {
 	Id string `json:"id"`
 }
 
@@ -133,7 +138,7 @@ func (ks *KongServerDomain) AddConsumerKeyAuth(id string, newKongKeyAuthConfig *
 
 	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, keyAuthPlugins)
 
-	payload, err := json.Marshal(KongConsumerKeyAuthRequest{
+	payload, err := json.Marshal(KongKeyAuthRequest{
 		Key: newKongKeyAuthConfig.key,
 		Ttl: newKongKeyAuthConfig.ttl,
 	})
@@ -170,7 +175,7 @@ func (ks *KongServerDomain) AddConsumerKeyAuth(id string, newKongKeyAuthConfig *
 		return err
 	}
 
-	var consumerKeyAuthResp KongConsumerKeyAuthResponse
+	var consumerKeyAuthResp KongKeyAuthResponse
 
 	err = json.Unmarshal(respPayload, &consumerKeyAuthResp)
 	if err != nil {
@@ -207,20 +212,15 @@ func NewKongJWTConfig(algorithm string, key string, secret string) *KongJWTConfi
 	}
 }
 
-// kong consumer ID payload
-type KongConsumerID struct {
-	Id string `json:"id"`
-}
-
 // kong consumer JWT request payload
-type KongConsumerJWTRequest struct {
+type KongJWTRequest struct {
 	Algorithm string `json:"algorithm,omitempty"`
 	Key       string `json:"key,omitempty"`
 	Secret    string `json:"secret,omitempty"`
 }
 
 // kong consumer JWT response payload
-type KongConsumerJWTResponse struct {
+type KongJWTResponse struct {
 	Id        string          `json:"id"`
 	Consumer  *KongConsumerID `json:"service,omitempty"`
 	Algorithm string          `json:"algorithm,omitempty"`
@@ -233,7 +233,7 @@ func (ks *KongServerDomain) AddConsumerJWT(id string, newKongJWTConfig *KongJWTC
 
 	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, jwtPlugins)
 
-	payload, err := json.Marshal(KongConsumerJWTRequest{
+	payload, err := json.Marshal(KongJWTRequest{
 		Algorithm: newKongJWTConfig.algorithm,
 		Key:       newKongJWTConfig.key,
 		Secret:    newKongJWTConfig.secret,
@@ -271,7 +271,7 @@ func (ks *KongServerDomain) AddConsumerJWT(id string, newKongJWTConfig *KongJWTC
 		return err
 	}
 
-	var consumerJWTResp KongConsumerJWTResponse
+	var consumerJWTResp KongJWTResponse
 
 	err = json.Unmarshal(respPayload, &consumerJWTResp)
 	if err != nil {
@@ -291,59 +291,59 @@ func (ks *KongServerDomain) AddConsumerJWT(id string, newKongJWTConfig *KongJWTC
 	return nil
 }
 
-// kong plugin config attributes
-type KongIPRestrictionConfigRules struct {
+// kong IP Restriction config attributes
+type KongIPRestrictionConfig struct {
 	allow []string
 	deny  []string
 }
 
-// kong IP Restriction config attributes
-type KongIPRestrictionConfig struct {
+// kong IP Restriction plugin attributes
+type KongIPRestrictionPlugin struct {
 	name   string
-	config *KongIPRestrictionConfigRules
+	config *KongIPRestrictionConfig
 }
 
-// create a new kong JWT config
-func NewKongIPRestrictionConfig(name string, allow []string, deny []string) *KongIPRestrictionConfig {
+// create a new kong IP Restriction plugin
+func NewKongIPRestrictionPlugin(name string, allow []string, deny []string) *KongIPRestrictionPlugin {
 
-	return &KongIPRestrictionConfig{
+	return &KongIPRestrictionPlugin{
 		name: name,
-		config: &KongIPRestrictionConfigRules{
+		config: &KongIPRestrictionConfig{
 			allow: allow,
 			deny:  deny,
 		},
 	}
 }
 
-// kong plugin config attributes
-type KongIPRestrictionPluginConfig struct {
+// kong plugin request config
+type KongIPRestrictionRequestConfig struct {
 	Allow []string `json:"allow,omitempty"`
 	Deny  []string `json:"deny,omitempty"`
 }
 
 // kong consumer JWT request payload
-type KongConsumerIPRestrictionRequest struct {
-	Name         string                         `json:"name,omitempty"`
-	InstanceName string                         `json:"instance_name,omitempty"`
-	Config       *KongIPRestrictionPluginConfig `json:"config,omitempty"`
+type KongIPRestrictionRequest struct {
+	Name         string                          `json:"name,omitempty"`
+	InstanceName string                          `json:"instance_name,omitempty"`
+	Config       *KongIPRestrictionRequestConfig `json:"config,omitempty"`
 }
 
 // kong consumer JWT response payload
-type KongConsumerIPRestrictionResponse struct {
-	Id           string                        `json:"id"`
-	Name         string                        `json:"name,omitempty"`
-	InstanceName string                        `json:"instance_name,omitempty"`
-	Config       KongIPRestrictionPluginConfig `json:"config,omitempty"`
+type KongIPRestrictionResponse struct {
+	Id           string                         `json:"id"`
+	Name         string                         `json:"name,omitempty"`
+	InstanceName string                         `json:"instance_name,omitempty"`
+	Config       KongIPRestrictionRequestConfig `json:"config,omitempty"`
 }
 
-func (ks *KongServerDomain) AddConsumerIPRestriction(id string, newKongIPRestrictionConfig *KongIPRestrictionConfig, options Options) error {
+func (ks *KongServerDomain) AddConsumerIPRestriction(id string, newKongIPRestrictionConfig *KongIPRestrictionPlugin, options Options) error {
 
 	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, pluginsResource)
 
-	payload, err := json.Marshal(KongConsumerIPRestrictionRequest{
+	payload, err := json.Marshal(KongIPRestrictionRequest{
 		Name:         IPRestrictionPlugins,
 		InstanceName: newKongIPRestrictionConfig.name,
-		Config: &KongIPRestrictionPluginConfig{
+		Config: &KongIPRestrictionRequestConfig{
 			Allow: newKongIPRestrictionConfig.config.allow,
 			Deny:  newKongIPRestrictionConfig.config.deny,
 		},
@@ -384,7 +384,7 @@ func (ks *KongServerDomain) AddConsumerIPRestriction(id string, newKongIPRestric
 		return err
 	}
 
-	var consumerIPRestrictionResp KongConsumerIPRestrictionResponse
+	var consumerIPRestrictionResp KongIPRestrictionResponse
 
 	err = json.Unmarshal(respPayload, &consumerIPRestrictionResp)
 	if err != nil {
@@ -398,6 +398,131 @@ func (ks *KongServerDomain) AddConsumerIPRestriction(id string, newKongIPRestric
 			fmt.Printf("http response status code: %s\nnew plugin ID: %s\n", resp.Status, consumerIPRestrictionResp.Id)
 		} else {
 			fmt.Printf("%s\n", consumerIPRestrictionResp.Id)
+		}
+	}
+
+	return nil
+}
+
+// kong Rate Limiting config attributes
+type KongRateLimitingConfig struct {
+	second       int32
+	minute       int32
+	hour         int32
+	errorCode    int32
+	errorMessage string
+}
+
+// kong Rate Limiting plugin attributes
+type KongRateLimitingPlugin struct {
+	name   string
+	config *KongRateLimitingConfig
+}
+
+// create a new kong Rate Limiting plugin
+func NewKongRateLimitingPlugin(name string, second int32, minute int32, hour int32, errorCode int32, errorMessage string) *KongRateLimitingPlugin {
+
+	return &KongRateLimitingPlugin{
+		name: name,
+		config: &KongRateLimitingConfig{
+			second:       second,
+			minute:       minute,
+			hour:         hour,
+			errorCode:    errorCode,
+			errorMessage: errorMessage,
+		},
+	}
+}
+
+// kong plugin request config
+type KongRateLimitingRequestConfig struct {
+	Second       int32  `json:"second,omitempty"`
+	Minute       int32  `json:"minute,omitempty"`
+	Hour         int32  `json:"hour,omitempty"`
+	ErrorCode    int32  `json:"error_code,omitempty"`
+	ErrorMessage string `json:"error_message,omitempty"`
+}
+
+// kong consumer JWT request payload
+type KongRateLimitingRequest struct {
+	Name         string                         `json:"name,omitempty"`
+	InstanceName string                         `json:"instance_name,omitempty"`
+	Config       *KongRateLimitingRequestConfig `json:"config,omitempty"`
+}
+
+// kong consumer JWT response payload
+type KongRateLimitingResponse struct {
+	Id           string                        `json:"id"`
+	Name         string                        `json:"name,omitempty"`
+	InstanceName string                        `json:"instance_name,omitempty"`
+	Config       KongRateLimitingRequestConfig `json:"config,omitempty"`
+}
+
+func (ks *KongServerDomain) AddConsumerRateLimiting(id string, newKongRateLimitingPlugin *KongRateLimitingPlugin, options Options) error {
+
+	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, pluginsResource)
+
+	payload, err := json.Marshal(KongRateLimitingRequest{
+		Name:         RateLimitingPlugins,
+		InstanceName: newKongRateLimitingPlugin.name,
+		Config: &KongRateLimitingRequestConfig{
+			Second:       newKongRateLimitingPlugin.config.second,
+			Minute:       newKongRateLimitingPlugin.config.minute,
+			Hour:         newKongRateLimitingPlugin.config.hour,
+			ErrorCode:    newKongRateLimitingPlugin.config.errorCode,
+			ErrorMessage: newKongRateLimitingPlugin.config.errorMessage,
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	//log.Printf("[debug] URL: %s", consumerPluginURL)
+	//log.Printf("[debug] post payload: %s", payload)
+
+	req, err := http.NewRequest("POST", consumerPluginURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("consumer not found")
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return errors.New("fail sending add consumer IP Restriction command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var consumerRateLimitingResponse KongRateLimitingResponse
+
+	err = json.Unmarshal(respPayload, &consumerRateLimitingResponse)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nnew plugin ID: %s\n", resp.Status, consumerRateLimitingResponse.Id)
+		} else {
+			fmt.Printf("%s\n", consumerRateLimitingResponse.Id)
 		}
 	}
 

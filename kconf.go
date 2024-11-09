@@ -35,6 +35,9 @@ var (
 	targetRegEx     *regexp.Regexp
 	allowRegEx      *regexp.Regexp
 	denyRegEx       *regexp.Regexp
+	secondRegEx     *regexp.Regexp
+	minutoRegEx     *regexp.Regexp
+	hourRegEx       *regexp.Regexp
 )
 
 func compileRegExp() error {
@@ -143,6 +146,21 @@ func compileRegExp() error {
 	}
 
 	denyRegEx, err = regexp.Compile(`^--deny\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	secondRegEx, err = regexp.Compile(`^--second\s*=\s*(\d+)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	minutoRegEx, err = regexp.Compile(`^--minute\s*=\s*(\d+)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	hourRegEx, err = regexp.Compile(`^--hour\s*=\s*(\d+)\s*$`)
 	if err != nil {
 		return err
 	}
@@ -421,9 +439,52 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 			return errors.New("missing consumer id: option --id={id} required for this command")
 		}
 
-		newKongIPRestrictionConfig := NewKongIPRestrictionConfig(name, allow, deny)
+		newKongIPRestrictionConfig := NewKongIPRestrictionPlugin(name, allow, deny)
 
 		return myKongServer.AddConsumerIPRestriction(id, newKongIPRestrictionConfig, options)
+
+	case "consumer-rate-limiting":
+		var id string
+		var name string
+		var second int
+		var minute int
+		var hour int
+		var errorCode int = 429
+		var errorMessage string = "API rate limit exceeded"
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+
+			match = nameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				name = match[0][1]
+			}
+
+			match = secondRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				second, _ = strconv.Atoi(match[0][1])
+			}
+
+			match = minutoRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				minute, _ = strconv.Atoi(match[0][1])
+			}
+
+			match = hourRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				hour, _ = strconv.Atoi(match[0][1])
+			}
+		}
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		newKongRateLimitingPlugin := NewKongRateLimitingPlugin(name, int32(second), int32(minute), int32(hour), int32(errorCode), errorMessage)
+
+		return myKongServer.AddConsumerRateLimiting(id, newKongRateLimitingPlugin, options)
 
 	case "plugin":
 		var name string

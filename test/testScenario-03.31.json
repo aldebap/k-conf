@@ -1,0 +1,10 @@
+{
+    "scenario": "03.31",
+    "description": "command add consumer-rate-limiting with non existing consumer",
+    "option": "add consumer-rate-limiting --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "string"
+    }
+}
