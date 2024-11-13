@@ -321,14 +321,14 @@ type KongIPRestrictionRequestConfig struct {
 	Deny  []string `json:"deny,omitempty"`
 }
 
-// kong consumer JWT request payload
+// kong consumer IP Restriction request payload
 type KongIPRestrictionRequest struct {
 	Name         string                          `json:"name,omitempty"`
 	InstanceName string                          `json:"instance_name,omitempty"`
 	Config       *KongIPRestrictionRequestConfig `json:"config,omitempty"`
 }
 
-// kong consumer JWT response payload
+// kong consumer IP Restriction response payload
 type KongIPRestrictionResponse struct {
 	Id           string                         `json:"id"`
 	Name         string                         `json:"name,omitempty"`
@@ -443,14 +443,14 @@ type KongRateLimitingRequestConfig struct {
 	ErrorMessage string `json:"error_message,omitempty"`
 }
 
-// kong consumer JWT request payload
+// kong consumer Rate Limiting request payload
 type KongRateLimitingRequest struct {
 	Name         string                         `json:"name,omitempty"`
 	InstanceName string                         `json:"instance_name,omitempty"`
 	Config       *KongRateLimitingRequestConfig `json:"config,omitempty"`
 }
 
-// kong consumer JWT response payload
+// kong consumer Rate Limiting response payload
 type KongRateLimitingResponse struct {
 	Id           string                        `json:"id"`
 	Name         string                        `json:"name,omitempty"`
@@ -498,7 +498,7 @@ func (ks *KongServerDomain) AddConsumerRateLimiting(id string, newKongRateLimiti
 	}
 
 	if resp.StatusCode != http.StatusCreated {
-		return errors.New("fail sending add consumer IP Restriction command to Kong: " + resp.Status)
+		return errors.New("fail sending add consumer Rate Limiting command to Kong: " + resp.Status)
 	}
 
 	//	parse response payload
@@ -523,6 +523,123 @@ func (ks *KongServerDomain) AddConsumerRateLimiting(id string, newKongRateLimiti
 			fmt.Printf("http response status code: %s\nnew plugin ID: %s\n", resp.Status, consumerRateLimitingResponse.Id)
 		} else {
 			fmt.Printf("%s\n", consumerRateLimitingResponse.Id)
+		}
+	}
+
+	return nil
+}
+
+// kong Request Size Limiting config attributes
+type KongRequestSizeLimitingConfig struct {
+	allowedPayloadSize   int32
+	sizeUnit             string
+	requireContentLength bool
+}
+
+// kong Request Size Limiting plugin attributes
+type KongRequestSizeLimitingPlugin struct {
+	name   string
+	config *KongRequestSizeLimitingConfig
+}
+
+// create a new kong Request Size Limiting plugin
+func NewKongRequestSizeLimitingPlugin(name string, allowedPayloadSize int32, sizeUnit string, requireContentLength bool) *KongRequestSizeLimitingPlugin {
+
+	return &KongRequestSizeLimitingPlugin{
+		name: name,
+		config: &KongRequestSizeLimitingConfig{
+			allowedPayloadSize:   allowedPayloadSize,
+			sizeUnit:             sizeUnit,
+			requireContentLength: requireContentLength,
+		},
+	}
+}
+
+// kong plugin request config
+type KongRequestSizeLimitingRequestConfig struct {
+	AllowedPayloadSize   int32  `json:"allowed_payload_size,omitempty"`
+	SizeUnit             string `json:"size_unit,omitempty"`
+	RequireContentLength bool   `json:"require_content_length,omitempty"`
+}
+
+// kong consumer Request Size Limiting request payload
+type KongRequestSizeLimitingRequest struct {
+	Name         string                                `json:"name,omitempty"`
+	InstanceName string                                `json:"instance_name,omitempty"`
+	Config       *KongRequestSizeLimitingRequestConfig `json:"config,omitempty"`
+}
+
+// kong consumer Request Size Limiting response payload
+type KongRequestSizeLimitingResponse struct {
+	Id           string                               `json:"id"`
+	Name         string                               `json:"name,omitempty"`
+	InstanceName string                               `json:"instance_name,omitempty"`
+	Config       KongRequestSizeLimitingRequestConfig `json:"config,omitempty"`
+}
+
+func (ks *KongServerDomain) AddConsumerRequestSizeLimiting(id string, newKongRequestSizeLimitingPlugin *KongRequestSizeLimitingPlugin, options Options) error {
+
+	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, pluginsResource)
+
+	payload, err := json.Marshal(KongRequestSizeLimitingRequest{
+		Name:         RequestSizeLimitingPlugins,
+		InstanceName: newKongRequestSizeLimitingPlugin.name,
+		Config: &KongRequestSizeLimitingRequestConfig{
+			AllowedPayloadSize:   newKongRequestSizeLimitingPlugin.config.allowedPayloadSize,
+			SizeUnit:             newKongRequestSizeLimitingPlugin.config.sizeUnit,
+			RequireContentLength: newKongRequestSizeLimitingPlugin.config.requireContentLength,
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	//log.Printf("[debug] URL: %s", consumerPluginURL)
+	//log.Printf("[debug] post payload: %s", payload)
+
+	req, err := http.NewRequest("POST", consumerPluginURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("consumer not found")
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return errors.New("fail sending add consumer Request Size Limiting command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var consumerRequestSizeLimitingResponse KongRequestSizeLimitingResponse
+
+	err = json.Unmarshal(respPayload, &consumerRequestSizeLimitingResponse)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nnew plugin ID: %s\n", resp.Status, consumerRequestSizeLimitingResponse.Id)
+		} else {
+			fmt.Printf("%s\n", consumerRequestSizeLimitingResponse.Id)
 		}
 	}
 

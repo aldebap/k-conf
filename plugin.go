@@ -96,11 +96,12 @@ type KongPluginListResponse struct {
 const (
 	pluginsResource string = "plugins"
 
-	basicAuthPlugins     string = "basic-auth"
-	keyAuthPlugins       string = "key-auth"
-	jwtPlugins           string = "jwt"
-	IPRestrictionPlugins string = "ip-restriction"
-	RateLimitingPlugins  string = "rate-limiting"
+	basicAuthPlugins           string = "basic-auth"
+	keyAuthPlugins             string = "key-auth"
+	jwtPlugins                 string = "jwt"
+	IPRestrictionPlugins       string = "ip-restriction"
+	RateLimitingPlugins        string = "rate-limiting"
+	RequestSizeLimitingPlugins string = "request-size-limiting"
 )
 
 // add a new plugin to Kong

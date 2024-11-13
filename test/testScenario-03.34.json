@@ -1,0 +1,10 @@
+{
+    "scenario": "03.34",
+    "description": "command add consumer-request-size-limiting with non existing consumer",
+    "option": "add consumer-request-size-limiting --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "string"
+    }
+}
