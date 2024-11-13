@@ -41,6 +41,7 @@ type KongServer interface {
 	AddConsumerJWT(id string, newKongJWTConfig *KongJWTConfig, options Options) error
 	AddConsumerIPRestriction(id string, newKongIPRestrictionConfig *KongIPRestrictionPlugin, options Options) error
 	AddConsumerRateLimiting(id string, newKongRateLimitingPlugin *KongRateLimitingPlugin, options Options) error
+	AddConsumerRequestSizeLimiting(id string, newKongRequestSizeLimitingPlugin *KongRequestSizeLimitingPlugin, options Options) error
 
 	AddPlugin(newKongPlugin *KongPlugin, options Options) error
 	QueryPlugin(id string, options Options) error

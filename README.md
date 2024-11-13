@@ -481,6 +481,21 @@ $ kconf add consumer-rate-limiting --id=3791a990-2adb-453c-a7ca-c5b5fd7a97ac --n
 5be30973-f97d-4441-a671-85e35f759b05
 ```
 
+- <font color="green">**add consumer-request-size-limiting**</font> - add Request Size Limiting plugin for a consumer.
+This command have the following options:
+  - <font color="orange">`--id={consumer id}`</font> specify consumer id to add the plugin
+  - <font color="orange">`--name={name}`</font> specify instance name for the plugin
+  - <font color="orange">`--allowed-payload-size={size}`</font> specify the maximum payload size
+  - <font color="orange">`--size-unit=[megabytes|kilobytes|bytes]`</font> specify the payload size unit
+  - <font color="orange">`--require-content-length=[true|false]`</font> specify if request header Content-Length is required
+
+If the plugin is successfully added to **Kong**, `kconf` will return the ID for the new plugin.
+
+```sh
+$ kconf add consumer-request-size-limiting --id=3791a990-2adb-453c-a7ca-c5b5fd7a97ac --allowed-payload-size=8 --size-unit=kilobytes --require-content-length=true",
+5be30973-f97d-4441-a671-85e35f759b05
+```
+
 ## kconf backlog
 
 ### Features backlog (for v0.3 release)
@@ -497,7 +512,7 @@ $ kconf add consumer-rate-limiting --id=3791a990-2adb-453c-a7ca-c5b5fd7a97ac --n
 - [X] ~~Endpoint to delete a target~~
 - [X] ~~Endpoint to add a IP Restriction plugin for a consumer~~
 - [X] ~~Endpoint to add a Rate Limit plugin for a consumer~~
-- [ ] Endpoint to add a Request Size Limit plugin for a consumer
+- [X] ~~Endpoint to add a Request Size Limit plugin for a consumer~~
 - [ ] Endpoint to add a Syslog plugin for a consumer
 
 ### Features backlog (for v0.4 release)

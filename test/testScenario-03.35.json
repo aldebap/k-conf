@@ -1,0 +1,12 @@
+{
+    "scenario": "03.35",
+    "description": "command add consumer-request-size-limiting",
+    "option": "-verbose add consumer-request-size-limiting --id=${CUSTOMER_GUID} --allowed-payload-size=8 --size-unit=kilobytes --require-content-length=true",
+    "expected-result": {
+        "status": 0,
+        "output": "^new plugin ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "echo \"[debug] scenario 03.35- customer ID = ${CUSTOMER_GUID}\"",
+    "post-test-script": "#export PLUGIN_GUID=\"${REGEX_RESULT}\""
+}

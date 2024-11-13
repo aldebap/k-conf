@@ -14,30 +14,33 @@ import (
 )
 
 var (
-	nameRegEx       *regexp.Regexp
-	urlRegEx        *regexp.Regexp
-	enabledRegEx    *regexp.Regexp
-	protocolsRegEx  *regexp.Regexp
-	methodsRegEx    *regexp.Regexp
-	pathsRegEx      *regexp.Regexp
-	serviceIdRegEx  *regexp.Regexp
-	customIdRegEx   *regexp.Regexp
-	userNameRegEx   *regexp.Regexp
-	tagsRegEx       *regexp.Regexp
-	routeIdRegEx    *regexp.Regexp
-	idRegEx         *regexp.Regexp
-	passwordRegEx   *regexp.Regexp
-	algorithmRegEx  *regexp.Regexp
-	keyRegEx        *regexp.Regexp
-	secretRegEx     *regexp.Regexp
-	ttlRegEx        *regexp.Regexp
-	upstreamIdRegEx *regexp.Regexp
-	targetRegEx     *regexp.Regexp
-	allowRegEx      *regexp.Regexp
-	denyRegEx       *regexp.Regexp
-	secondRegEx     *regexp.Regexp
-	minutoRegEx     *regexp.Regexp
-	hourRegEx       *regexp.Regexp
+	nameRegEx                 *regexp.Regexp
+	urlRegEx                  *regexp.Regexp
+	enabledRegEx              *regexp.Regexp
+	protocolsRegEx            *regexp.Regexp
+	methodsRegEx              *regexp.Regexp
+	pathsRegEx                *regexp.Regexp
+	serviceIdRegEx            *regexp.Regexp
+	customIdRegEx             *regexp.Regexp
+	userNameRegEx             *regexp.Regexp
+	tagsRegEx                 *regexp.Regexp
+	routeIdRegEx              *regexp.Regexp
+	idRegEx                   *regexp.Regexp
+	passwordRegEx             *regexp.Regexp
+	algorithmRegEx            *regexp.Regexp
+	keyRegEx                  *regexp.Regexp
+	secretRegEx               *regexp.Regexp
+	ttlRegEx                  *regexp.Regexp
+	upstreamIdRegEx           *regexp.Regexp
+	targetRegEx               *regexp.Regexp
+	allowRegEx                *regexp.Regexp
+	denyRegEx                 *regexp.Regexp
+	secondRegEx               *regexp.Regexp
+	minutoRegEx               *regexp.Regexp
+	hourRegEx                 *regexp.Regexp
+	allowedPayloadSizeRegEx   *regexp.Regexp
+	sizeUnitRegEx             *regexp.Regexp
+	requireContentLengthRegEx *regexp.Regexp
 )
 
 func compileRegExp() error {
@@ -161,6 +164,21 @@ func compileRegExp() error {
 	}
 
 	hourRegEx, err = regexp.Compile(`^--hour\s*=\s*(\d+)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	allowedPayloadSizeRegEx, err = regexp.Compile(`^--allowed-payload-size\s*=\s*(\d+)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	sizeUnitRegEx, err = regexp.Compile(`^--size-unit\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	requireContentLengthRegEx, err = regexp.Compile(`^--require-content-length\s*=\s*(\S.*)\s*$`)
 	if err != nil {
 		return err
 	}
@@ -485,6 +503,56 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		newKongRateLimitingPlugin := NewKongRateLimitingPlugin(name, int32(second), int32(minute), int32(hour), int32(errorCode), errorMessage)
 
 		return myKongServer.AddConsumerRateLimiting(id, newKongRateLimitingPlugin, options)
+
+	case "consumer-request-size-limiting":
+		var id string
+		var name string
+		var allowedPayloadSize int
+		var sizeUnit string
+		var requireContentLength bool
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+
+			match = nameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				name = match[0][1]
+			}
+
+			match = allowedPayloadSizeRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				allowedPayloadSize, _ = strconv.Atoi(match[0][1])
+			}
+
+			match = sizeUnitRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				sizeUnit = match[0][1]
+			}
+
+			match = requireContentLengthRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				switch match[0][1] {
+				case "false":
+					requireContentLength = false
+
+				case "true":
+					requireContentLength = true
+
+				default:
+					return errors.New("wrong value for option --require-content-length: " + match[0][1])
+				}
+			}
+		}
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		newKongRequestSizeLimitingPlugin := NewKongRequestSizeLimitingPlugin(name, int32(allowedPayloadSize), sizeUnit, requireContentLength)
+
+		return myKongServer.AddConsumerRequestSizeLimiting(id, newKongRequestSizeLimitingPlugin, options)
 
 	case "plugin":
 		var name string

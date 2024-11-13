@@ -1,0 +1,10 @@
+{
+    "scenario": "03.33",
+    "description": "command add consumer-request-size-limiting without parameters",
+    "option": "add consumer-request-size-limiting",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}
