@@ -102,6 +102,7 @@ const (
 	IPRestrictionPlugins       string = "ip-restriction"
 	RateLimitingPlugins        string = "rate-limiting"
 	RequestSizeLimitingPlugins string = "request-size-limiting"
+	SyslogPlugins              string = "syslog"
 )
 
 // add a new plugin to Kong

@@ -1,0 +1,10 @@
+{
+    "scenario": "03.36",
+    "description": "command add consumer-syslog without parameters",
+    "option": "add consumer-syslog",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] missing consumer id: option --id={id} required for this command",
+        "format": "string"
+    }
+}
