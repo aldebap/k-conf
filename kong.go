@@ -42,6 +42,7 @@ type KongServer interface {
 	AddConsumerIPRestriction(id string, newKongIPRestrictionConfig *KongIPRestrictionPlugin, options Options) error
 	AddConsumerRateLimiting(id string, newKongRateLimitingPlugin *KongRateLimitingPlugin, options Options) error
 	AddConsumerRequestSizeLimiting(id string, newKongRequestSizeLimitingPlugin *KongRequestSizeLimitingPlugin, options Options) error
+	AddConsumerSyslog(id string, newKongSyslogPlugin *KongSyslogPlugin, options Options) error
 
 	AddPlugin(newKongPlugin *KongPlugin, options Options) error
 	QueryPlugin(id string, options Options) error

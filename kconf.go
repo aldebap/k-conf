@@ -41,6 +41,7 @@ var (
 	allowedPayloadSizeRegEx   *regexp.Regexp
 	sizeUnitRegEx             *regexp.Regexp
 	requireContentLengthRegEx *regexp.Regexp
+	logLevelRegEx             *regexp.Regexp
 )
 
 func compileRegExp() error {
@@ -179,6 +180,11 @@ func compileRegExp() error {
 	}
 
 	requireContentLengthRegEx, err = regexp.Compile(`^--require-content-length\s*=\s*(\S.*)\s*$`)
+	if err != nil {
+		return err
+	}
+
+	logLevelRegEx, err = regexp.Compile(`^--log-level\s*=\s*(\S.*)\s*$`)
 	if err != nil {
 		return err
 	}
@@ -553,6 +559,35 @@ func commandAdd(myKongServer KongServer, command []string, options Options) erro
 		newKongRequestSizeLimitingPlugin := NewKongRequestSizeLimitingPlugin(name, int32(allowedPayloadSize), sizeUnit, requireContentLength)
 
 		return myKongServer.AddConsumerRequestSizeLimiting(id, newKongRequestSizeLimitingPlugin, options)
+
+	case "consumer-syslog":
+		var id string
+		var name string
+		var logLevel string
+
+		for i := 1; i < len(command); i++ {
+			match := idRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				id = match[0][1]
+			}
+
+			match = nameRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				name = match[0][1]
+			}
+
+			match = logLevelRegEx.FindAllStringSubmatch(command[i], -1)
+			if len(match) == 1 {
+				logLevel = match[0][1]
+			}
+		}
+		if len(id) == 0 {
+			return errors.New("missing consumer id: option --id={id} required for this command")
+		}
+
+		newKongSyslogPlugin := NewKongSyslogPlugin(name, logLevel)
+
+		return myKongServer.AddConsumerSyslog(id, newKongSyslogPlugin, options)
 
 	case "plugin":
 		var name string

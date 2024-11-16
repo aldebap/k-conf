@@ -1,0 +1,10 @@
+{
+    "scenario": "03.37",
+    "description": "command add consumer-syslog with non existing consumer",
+    "option": "add consumer-syslog --id=00000-00000",
+    "expected-result": {
+        "status": 255,
+        "output": "[error] consumer not found",
+        "format": "string"
+    }
+}

@@ -1,0 +1,12 @@
+{
+    "scenario": "03.38",
+    "description": "command add consumer-syslog",
+    "option": "-verbose add consumer-syslog --id=${CUSTOMER_GUID} --log-level=debug",
+    "expected-result": {
+        "status": 0,
+        "output": "^new plugin ID: (\\S+)$",
+        "format": "regex_id"
+    },
+    "pre-test-script": "echo \"[debug] scenario 03.38- customer ID = ${CUSTOMER_GUID}\"",
+    "post-test-script": "#export PLUGIN_GUID=\"${REGEX_RESULT}\""
+}

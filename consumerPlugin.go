@@ -645,3 +645,112 @@ func (ks *KongServerDomain) AddConsumerRequestSizeLimiting(id string, newKongReq
 
 	return nil
 }
+
+// kong Syslog config attributes
+type KongSyslogConfig struct {
+	logLevel string
+}
+
+// kong Syslog plugin attributes
+type KongSyslogPlugin struct {
+	name   string
+	config *KongSyslogConfig
+}
+
+// create a new kong Syslog plugin
+func NewKongSyslogPlugin(name string, logLevel string) *KongSyslogPlugin {
+
+	return &KongSyslogPlugin{
+		name: name,
+		config: &KongSyslogConfig{
+			logLevel: logLevel,
+		},
+	}
+}
+
+// kong plugin request config
+type KongSyslogConfigRequest struct {
+	LogLevel string `json:"log_level,omitempty"`
+}
+
+// kong consumer Syslog request payload
+type KongSyslogRequest struct {
+	Name         string                   `json:"name,omitempty"`
+	InstanceName string                   `json:"instance_name,omitempty"`
+	Config       *KongSyslogConfigRequest `json:"config,omitempty"`
+}
+
+// kong consumer Syslog response payload
+type KongSyslogResponse struct {
+	Id           string                  `json:"id"`
+	Name         string                  `json:"name,omitempty"`
+	InstanceName string                  `json:"instance_name,omitempty"`
+	Config       KongSyslogConfigRequest `json:"config,omitempty"`
+}
+
+func (ks *KongServerDomain) AddConsumerSyslog(id string, newKongSyslogPlugin *KongSyslogPlugin, options Options) error {
+
+	var consumerPluginURL string = fmt.Sprintf("%s/%s/%s/%s", ks.ServerURL(), consumersResource, id, pluginsResource)
+
+	payload, err := json.Marshal(KongSyslogRequest{
+		Name:         SyslogPlugins,
+		InstanceName: newKongSyslogPlugin.name,
+		Config: &KongSyslogConfigRequest{
+			LogLevel: newKongSyslogPlugin.config.logLevel,
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	//log.Printf("[debug] URL: %s", consumerPluginURL)
+	//log.Printf("[debug] post payload: %s", payload)
+
+	req, err := http.NewRequest("POST", consumerPluginURL, bytes.NewBuffer([]byte(payload)))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusNotFound {
+		return errors.New("consumer not found")
+	}
+
+	if resp.StatusCode != http.StatusCreated {
+		return errors.New("fail sending add consumer Request Size Limiting command to Kong: " + resp.Status)
+	}
+
+	//	parse response payload
+	var respPayload []byte
+
+	respPayload, err = io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	var consumerSyslogResponse KongSyslogResponse
+
+	err = json.Unmarshal(respPayload, &consumerSyslogResponse)
+	if err != nil {
+		return err
+	}
+
+	if options.jsonOutput {
+		fmt.Printf("%s\n%s\n", resp.Status, string(respPayload))
+	} else {
+		if options.verbose {
+			fmt.Printf("http response status code: %s\nnew plugin ID: %s\n", resp.Status, consumerSyslogResponse.Id)
+		} else {
+			fmt.Printf("%s\n", consumerSyslogResponse.Id)
+		}
+	}
+
+	return nil
+}
